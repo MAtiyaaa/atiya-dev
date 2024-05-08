@@ -3,7 +3,7 @@ QBCore = exports['qb-core']:GetCoreObject()
 local polyzonePoints = {}
 local playerPedId
 local showDevInfo = false
-local invincibleState = false
+local invincible = false
 local invisibleState = false
 local walkThroughWallsState = false
 local infiniteAmmoState = false
@@ -12,7 +12,9 @@ local markerActive = false
 local polyzoneActive = false
 local laserActive = false
 local propsActive = false
+local pedsActive = false
 local noclip = false
+local atiyacuff = false
 local originalPedModel = nil
 local currentScreenEffect = nil
 local effectDuration = 10000
@@ -40,11 +42,17 @@ RegisterNetEvent("atiya-dev:copyToClipboard", function(coordinateText, type)
     copyToClipboard(coordinateText, type)
 end)
 
-
 RegisterNetEvent('atiya-dev:setInvincibility', function()
-    local playerPed = PlayerPedId()
-    invincibleState = not invincibleState
-    SetEntityInvincible(playerPed, invincibleState)
+    invincible = not invincible
+    if invincible then
+        TriggerEvent('QBCore:Notify', 'God Mode: On', 'success')
+        while invincible do
+            Wait(0)
+            SetPlayerInvincible(PlayerId(), true)
+        end
+        SetPlayerInvincible(PlayerId(), false)
+        TriggerEvent('QBCore:Notify', 'God Mode: Off', 'error')
+    end
 end)
 
 RegisterNetEvent('atiya-dev:setInvisibility', function()
@@ -53,24 +61,18 @@ RegisterNetEvent('atiya-dev:setInvisibility', function()
 end)
 
 RegisterNetEvent('atiya-dev:setInfiniteAmmo', function()
-    local playerPed = PlayerPedId()
-    local weaponHash = GetSelectedPedWeapon(playerPed)
+    local playerPed = GetPlayerPed(-1)
     infiniteAmmoState = not infiniteAmmoState
-    if weaponHash and weaponHash ~= `WEAPON_UNARMED` then
-        if infiniteAmmoState then
-            Citizen.CreateThread(function()
-                while infiniteAmmoState do
-                    SetPedInfiniteAmmo(playerPed, true, weaponHash)
-                    AddAmmoToPed(playerPed, weaponHash, 1)
-                    Citizen.Wait(250)
-                end
-                SetPedInfiniteAmmo(playerPed, false, weaponHash)
-            end)
-        else
-            SetPedInfiniteAmmo(playerPed, false, weaponHash)
-        end
+
+    if infiniteAmmoState then
+        SetPedInfiniteAmmo(playerPed, true)
+        SetPedInfiniteAmmoClip(playerPed, true)
+        SetPedAmmo(playerPed, GetSelectedPedWeapon(playerPed), 999)
+        TriggerEvent('QBCore:Notify', 'Unlimited ammo activated.', 'success')
     else
-        TriggerEvent('QBCore:Notify', 'No weapon equipped or invalid weapon', 'error')
+        SetPedInfiniteAmmo(playerPed, false)
+        SetPedInfiniteAmmoClip(playerPed, false)
+        TriggerEvent('QBCore:Notify', 'Unlimited ammo deactivated.', 'success')
     end
 end)
 
@@ -319,21 +321,21 @@ RegisterNetEvent('atiya-dev:showNearbyProps', function()
     propsActive = not propsActive
     if not propsActive then return end
     Citizen.CreateThread(function()
-        local playerPed = PlayerPedId()
-        local playerCoords = GetEntityCoords(playerPed)
-        local radius = 5.0
-        local props = {}
-        for entity in EnumerateObjects() do
-            local entityCoords = GetEntityCoords(entity)
-            if #(playerCoords - entityCoords) <= radius then
-                local hash = GetEntityModel(entity)
-                local name = getObjectNameFromHash(hash)
-
-                table.insert(props, {name = name, hash = hash, coords = entityCoords, entity = entity})
-            end
-        end
         while propsActive do
             Citizen.Wait(0)
+            local playerPed = PlayerPedId()
+            local playerCoords = GetEntityCoords(playerPed)
+            local radius = 5.0
+            local props = {}
+            for entity in EnumerateObjects() do
+                local entityCoords = GetEntityCoords(entity)
+                if #(playerCoords - entityCoords) <= radius then
+                    local hash = GetEntityModel(entity)
+                    local name = getObjectNameFromHash(hash)
+
+                    table.insert(props, {name = name, hash = hash, coords = entityCoords, entity = entity})
+                end
+            end
             for _, prop in ipairs(props) do
                 DrawText3D2(prop.coords.x, prop.coords.y, prop.coords.z - 0.5, string.format('Name: %s\nHash: %d\nCoords: %.2f, %.2f, %.2f', prop.name, prop.hash, prop.coords.x, prop.coords.y, prop.coords.z))
                 DrawBoxAroundEntity(prop.entity)
@@ -560,34 +562,32 @@ RegisterNetEvent('atiya-dev:applyScreenEffect', function(effectName)
         end
     end)
 end)
-RegisterNetEvent('atiya-dev:applyLivery', function(liveryIndex)
-    local playerPed = PlayerPedId()
-    local vehicle = GetVehiclePedIsIn(playerPed, false)
-    if vehicle ~= 0 and DoesEntityExist(vehicle) then
-        SetVehicleLivery(vehicle, liveryIndex)
-        TriggerEvent('QBCore:Notify', ('Applied livery number %d to the vehicle'):format(liveryIndex), 'success')
-    else
-        TriggerEvent('QBCore:Notify', 'Not in a vehicle or invalid vehicle.', 'error')
-    end
-end)
 
 RegisterNetEvent('atiya-dev:adjustVehicleSpeed', function(multiplier)
     local playerPed = PlayerPedId()
     local vehicle = GetVehiclePedIsIn(playerPed, false)
     if vehicle ~= 0 and DoesEntityExist(vehicle) then
-        SetVehicleHandlingFloat(vehicle, 'CHandlingData', 'fInitialDriveForce', multiplier / 10)
-        TriggerEvent('QBCore:Notify', ('Vehicle speed multiplier set to %.3f'):format(multiplier), 'success')
+        local clampedMultiplier = math.min(multiplier, 10.0)
+        SetVehicleEnginePowerMultiplier(vehicle, 20.0 * clampedMultiplier)
+        TriggerEvent('QBCore:Notify', ('Vehicle speed multiplier set to %.3f'):format(clampedMultiplier), 'success')
     else
         TriggerEvent('QBCore:Notify', 'Not in a vehicle or invalid vehicle.', 'error')
     end
 end)
 
 RegisterNetEvent('atiya-dev:adjustPedSpeed', function(multiplier)
-    local playerId = PlayerId()
-    local maxMultiplier = math.min(multiplier, 10.0)
-    SetRunSprintMultiplierForPlayer(playerId, maxMultiplier)
-    SetSwimMultiplierForPlayer(playerId, maxMultiplier)
-    TriggerEvent('QBCore:Notify', ('Ped speed multiplier set to %.3f'):format(multiplier), 'success')
+    local playerPed = PlayerPedId()
+    if multiplier > 0 and multiplier <= 10.0 then
+        Citizen.CreateThread(function()
+            while true do
+                SetPedMoveRateOverride(playerPed, multiplier)
+                Citizen.Wait(100)
+            end
+        end)
+    else
+        SetPedMoveRateOverride(playerPed, 1.0)
+        TriggerEvent('QBCore:Notify', 'Speed multiplier reset to normal.', 'error')
+    end
 end)
 
 RegisterNetEvent('atiya-dev:spawnPed', function(pedHash, coords)
@@ -622,21 +622,6 @@ RegisterNetEvent('atiya-dev:togglePed', function(pedHash)
     end
     SetModelAsNoLongerNeeded(hash)
     TriggerEvent('QBCore:Notify', 'Toggled ped model.', 'success')
-end)
-
-RegisterNetEvent('atiya-dev:resetPed', function()
-    if originalPedModel then
-        RequestModel(originalPedModel)
-        while not HasModelLoaded(originalPedModel) do
-            Citizen.Wait(0)
-        end
-        SetPlayerModel(PlayerId(), originalPedModel)
-        SetModelAsNoLongerNeeded(originalPedModel)
-        originalPedModel = nil
-        TriggerEvent('QBCore:Notify', 'Restored to original model.', 'success')
-    else
-        TriggerEvent('QBCore:Notify', 'No original model saved.', 'error')
-    end
 end)
 
 RegisterNetEvent('atiya-dev:clearNearbyPeds', function()
@@ -774,6 +759,163 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterCommand('noclipa', function()
+RegisterCommand(AD.Commands.noclip.name, function()
     toggleNoclipMode()
 end, false)
+
+RegisterCommand(AD.Commands.addAttachments.name, function()
+    local playerPed = PlayerPedId()
+    local currentWeapon = GetSelectedPedWeapon(playerPed)
+    print("Current weapon hash:", currentWeapon)
+
+    if COMPONENTS[currentWeapon] then
+        for _, component in ipairs(COMPONENTS[currentWeapon]) do
+            local componentHash = GetHashKey(component)
+            GiveWeaponComponentToPed(playerPed, currentWeapon, componentHash)
+            print("Adding component:", component)
+        end
+        TriggerEvent('QBCore:Notify', 'All attachments added to your weapon.', 'success')
+    else
+        print("No attachments available for this weapon.")
+        TriggerEvent('QBCore:Notify', 'No attachments available for this weapon.', 'error')
+    end
+end, false)
+
+RegisterCommand(AD.Commands.resetped.name, function()
+    TriggerServerEvent('atiya-dev:resetPed') 
+end, false)
+
+RegisterNetEvent('atiya-dev:setHealth', function(health)
+    SetEntityHealth(PlayerPedId(), health) 
+end)
+
+RegisterNetEvent('atiya-dev:setArmor', function(armor)
+    SetPedArmour(PlayerPedId(), armor) 
+end)
+
+RegisterCommand(AD.Commands.die.name, function()
+    local myPed = PlayerPedId()
+    SetEntityHealth(myPed, 0)
+    TriggerEvent('QBCore:Notify', 'You have died', 'error') 
+end, false)
+
+RegisterNetEvent('atiya-dev:client:GetCuffed', function(handcuffed)
+    atiyacuff = handcuffed
+    handleHandcuffChange(handcuffed)
+end)
+
+function handleHandcuffChange(handcuffed)
+    local playerPed = PlayerPedId()
+    if handcuffed then
+        applyHandcuffAnimation()
+        TriggerEvent('QBCore:Notify', 'You have been handcuffed', 'error')
+    else
+        ClearPedTasks(playerPed)
+        TriggerEvent('QBCore:Notify', 'You have been uncuffed', 'success')
+    end
+end
+
+function applyHandcuffAnimation()
+    local playerPed = PlayerPedId()
+    RequestAnimDict('mp_arresting')
+    while not HasAnimDictLoaded('mp_arresting') do
+        Wait(10)
+    end
+    TaskPlayAnim(playerPed, 'mp_arresting', 'idle', 8.0, -8, -1, 49, 0, false, false, false)
+end
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(250)
+        if atiyacuff then
+            local playerPed = PlayerPedId()
+            if not IsEntityPlayingAnim(playerPed, 'mp_arresting', 'idle', 3) then
+                applyHandcuffAnimation()
+            end
+        end
+    end
+end)
+
+RegisterNetEvent('atiya-dev:showNearbyPeds', function()
+    pedsActive = not pedsActive
+    if not pedsActive then return end
+    Citizen.CreateThread(function()
+        while pedsActive do
+            Citizen.Wait(0)
+            local playerPed = PlayerPedId()
+            local playerCoords = GetEntityCoords(playerPed)
+            local radius = 5.0
+            local peds = {}
+
+            for ped in EnumeratePeds2() do
+                if IsPedHuman(ped) then
+                    local pedCoords = GetEntityCoords(ped)
+                    if #(playerCoords - pedCoords) <= radius then
+                        local hash = GetEntityModel(ped)
+                        local archetypeName = GetEntityArchetypeName(ped)  -- Use archetype name if available
+                        local displayName = archetypeName ~= '' and archetypeName or 'Unknown Archetype'
+
+                        table.insert(peds, {name = displayName, hash = hash, coords = pedCoords, entity = ped})
+                    end
+                end
+            end
+            for _, ped in ipairs(peds) do
+                DrawText3D4(ped.coords.x, ped.coords.y, ped.coords.z - 0.5, string.format('Ped Type: %s\nHash: %d\nCoords: %.2f, %.2f, %.2f', ped.name, ped.hash, ped.coords.x, ped.coords.y, ped.coords.z))
+                DrawBoxAroundEntity2(ped.entity)
+            end
+        end
+    end)
+end)
+
+function EnumeratePeds2()
+    return coroutine.wrap(function()
+        local handle, ped = FindFirstPed()
+        local success
+        repeat
+            coroutine.yield(ped)
+            success, ped = FindNextPed(handle)
+        until not success
+        EndFindPed(handle)
+    end)
+end
+
+function DrawText3D4(x, y, z, text)
+    local onScreen, _x, _y = World3dToScreen2d(x, y, z)
+    local px, py, pz = table.unpack(GetGameplayCamCoords())
+    local dist = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)
+
+    local scale = (1 / dist) * 2
+    local fov = (1 / GetGameplayCamFov()) * 100
+    local scale = scale * fov
+
+    if onScreen then
+        SetTextScale(0.0, 0.35 * scale)
+        SetTextFont(4)
+        SetTextProportional(1)
+        SetTextColour(255, 255, 255, 215)
+        SetTextEntry("STRING")
+        SetTextCentre(1)
+        AddTextComponentString(text)
+        DrawText(_x, _y)
+    end
+end
+
+function DrawBoxAroundEntity2(entity)
+    local model = GetEntityModel(entity)
+    local minDim, maxDim = GetModelDimensions(model)
+    local a = GetOffsetFromEntityInWorldCoords(entity, minDim.x, maxDim.y, minDim.z)
+    local b = GetOffsetFromEntityInWorldCoords(entity, minDim.x, minDim.y, minDim.z)
+    local c = GetOffsetFromEntityInWorldCoords(entity, maxDim.x, minDim.y, minDim.z)
+    local d = GetOffsetFromEntityInWorldCoords(entity, maxDim.x, maxDim.y, minDim.z)
+    local e = GetOffsetFromEntityInWorldCoords(entity, minDim.x, maxDim.y, maxDim.z)
+    local f = GetOffsetFromEntityInWorldCoords(entity, minDim.x, minDim.y, maxDim.z)
+    local g = GetOffsetFromEntityInWorldCoords(entity, maxDim.x, minDim.y, maxDim.z)
+    local h = GetOffsetFromEntityInWorldCoords(entity, maxDim.x, maxDim.y, maxDim.z)
+    local lines = {
+        {a, b}, {b, c}, {c, d}, {d, a}, {e, f}, {f, g}, {g, h}, {h, e},
+        {a, e}, {b, f}, {c, g}, {d, h}
+    }
+    for _, line in ipairs(lines) do
+        DrawLine(line[1].x, line[1].y, line[1].z, line[2].x, line[2].y, line[2].z, 255, 0, 0, 255)
+    end
+end
