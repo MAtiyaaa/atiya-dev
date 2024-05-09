@@ -2,7 +2,7 @@ QBCore = exports['qb-core']:GetCoreObject()
 
 local polyzonePoints = {}
 local placedObjects = {}
-local playerPedId
+local placedPeds = {}
 local showDevInfo = false
 local invincible = false
 local invisibleState = false
@@ -13,6 +13,7 @@ local markerActive = false
 local polyzoneActive = false
 local laserActive = false
 local propsActive = false
+local pedActive = false
 local pedsActive = false
 local noclip = false
 local atiyacuff = false
@@ -23,16 +24,20 @@ local objectTypeFlags = 16
 local baseSpeed = 1.0
 local speedMultiplier = 1.0
 local defaultSpeedMultiplier = 1.0
-local arrowRotation = 0.0
-local objectRotation = 0.0
 local arrowHeading = 0.0
-local objectHeading = 0.0
 local arrowHeight = 0.0
-local objectHeight = 0.0
 local forwardOffset = 0.0
 local lateralOffset = 0.0
 local fixedZLevel = 0.0
 local markerPosition = vector3(0.0, 0.0, 0.0)
+
+local function IsCommandEnabled(commandName)
+    local commandConfig = AD.Commands[commandName]
+    if commandConfig and commandConfig.enabled then
+        return true
+    end
+    return false
+end
 
 local function copyToClipboard(coordinateText, coordType)
     SendNUIMessage({
@@ -982,4 +987,78 @@ RegisterCommand(AD.Commands.deleteliveobj.name, function()
     end
     placedObjects = {}
     TriggerEvent('QBCore:Notify', 'All objects deleted.', 'success')
+end, false)
+
+RegisterNetEvent('atiya-dev:startPedPlacement', function(pedModel)
+    local pedActive = true
+    local playerPed = PlayerPedId()
+    local pedHash = GetHashKey(pedModel)
+    RequestModel(pedHash)
+    while not HasModelLoaded(pedHash) do
+        Citizen.Wait(0)
+    end
+    local spawnPos = GetEntityCoords(playerPed) + GetEntityForwardVector(playerPed) * 2.0
+    local placedPed = CreatePed(1, pedHash, spawnPos.x, spawnPos.y, spawnPos.z, 0.0, true, true)
+    SetEntityInvincible(placedPed, true)
+    SetPedCanRagdoll(placedPed, false)
+    FreezeEntityPosition(placedPed, true)
+    table.insert(placedPeds, placedPed)
+    TriggerEvent('QBCore:Notify', 'F2 and F3: L/R, ALT and `: F/B, [ and ]: Rotate', 'primary')
+    Citizen.CreateThread(function()
+        while pedActive do
+            Citizen.Wait(0)
+            local coords = GetEntityCoords(placedPed)
+            local headingRad = math.rad(GetEntityHeading(placedPed))
+            local forwardVec = vector3(math.cos(headingRad), math.sin(headingRad), 0.0)
+            local rightVec = vector3(math.sin(headingRad), -math.cos(headingRad), 0.0)
+            local newCoords = coords
+            if IsControlPressed(0, 289) then
+                newCoords = newCoords + forwardVec * 0.05
+            elseif IsControlPressed(0, 170) then
+                newCoords = newCoords - forwardVec * 0.05
+            end
+            if IsControlPressed(0, 243) then
+                newCoords = newCoords - rightVec * 0.05
+            elseif IsControlPressed(0, 19) then
+                newCoords = newCoords + rightVec * 0.05
+            end
+            if IsControlPressed(0, 172) then
+                newCoords = vector3(newCoords.x, newCoords.y, newCoords.z + 0.05)
+            elseif IsControlPressed(0, 173) then
+                newCoords = vector3(newCoords.x, newCoords.y, newCoords.z - 0.05)
+            end
+            if IsControlPressed(0, 39) then
+                SetEntityRotation(placedPed, vector3(0.0, 0.0, GetEntityRotation(placedPed, 2).z - 0.5))
+            elseif IsControlPressed(0, 40) then
+                SetEntityRotation(placedPed, vector3(0.0, 0.0, GetEntityRotation(placedPed, 2).z + 0.5))
+            end  
+            SetEntityCoordsNoOffset(placedPed, newCoords.x, newCoords.y, newCoords.z, false, false, true)
+            if IsControlJustReleased(0, 38) then
+                local heading = GetEntityHeading(placedPed)
+                local coordsText = string.format('Ped: %s, Hash: %d, vector4(%.2f, %.2f, %.2f, %.2f)', pedModel, pedHash, newCoords.x, newCoords.y, newCoords.z, heading)
+                TriggerEvent("atiya-dev:copyToClipboard", coordsText, "vector4")
+                pedActive = false
+                FreezeEntityPosition(placedPed, true)
+            end
+        end
+    end)
+end)
+
+RegisterCommand(AD.Commands.deleteliveped.name, function()
+    for _, ped in ipairs(placedPeds) do
+        if DoesEntityExist(ped) then
+            DeletePed(ped)
+        end
+    end
+    placedPeds = {}
+    TriggerEvent('QBCore:Notify', 'All peds deleted.', 'success')
+end, false)
+
+RegisterCommand(AD.Commands.liveped.name, function(source, args)
+    local pedModel = args[1]
+    if pedModel then
+        TriggerEvent('atiya-dev:startPedPlacement', pedModel)
+    else
+        TriggerEvent('QBCore:Notify', 'Usage: ped name', 'error')
+    end
 end, false)
