@@ -422,7 +422,7 @@ RegisterCommand(AD.Commands.setarmor.name, function(source, args)
     TriggerClientEvent('QBCore:Notify', source, "Armor set for player " .. targetPlayerId, 'success')
 end, false)
 
-RegisterCommand("handcuff", function(source, args, rawCommand)
+RegisterCommand(AD.Commands.handcuff.name, function(source, args, rawCommand)
     local src = source
     local targetId = tonumber(args[1])
     if targetId then
@@ -444,4 +444,34 @@ end)
 
 RegisterCommand(AD.Commands.showpeds.name, function(source, args, rawCommand)
     TriggerClientEvent('atiya-dev:showNearbyPeds', source)
+end, false)
+
+RegisterCommand(AD.Commands.startobjectplace.name, function(source, args, rawCommand)
+    if #args < 1 then
+        TriggerClientEvent('QBCore:Notify', source, 'Invalid object name or hash', 'error')
+        return
+    end
+    TriggerClientEvent('atiya-dev:startObjectPlacement', source, args[1])
+end, false)
+
+RegisterCommand(AD.Commands.sethunger.name, function(source, args, rawCommand)
+    local player = QBCore.Functions.GetPlayer(source)
+    local hungerLevel = tonumber(args[1])
+    if hungerLevel and hungerLevel >= 0 and hungerLevel <= 100 then
+        player.Functions.SetMetaData('hunger', hungerLevel)
+        TriggerClientEvent('QBCore:Notify', source, 'Hunger set to ' .. hungerLevel, 'success')
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'Enter a value between 0 and 100.', 'error')
+    end
+end, false)
+
+RegisterCommand(AD.Commands.setthirst.name, function(source, args, rawCommand)
+    local player = QBCore.Functions.GetPlayer(source)
+    local thirstLevel = tonumber(args[1])
+    if thirstLevel and thirstLevel >= 0 and thirstLevel <= 100 then
+        player.Functions.SetMetaData('thirst', thirstLevel)
+        TriggerClientEvent('QBCore:Notify', source, 'Thirst set to ' .. thirstLevel, 'success')
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'Enter a value between 0 and 100.', 'error')
+    end
 end, false)
