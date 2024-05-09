@@ -48,14 +48,14 @@ AD.Commands = {
     deleteobjectsinradius = {
         name = "deleteobjectsinradius",
     },
-    delvehicle = {
-        name = "delvehicle",
+    startobjectplace = {
+        name = "liveobj",
     },
-    delvehicleinradius = {
-        name = "delvehicleinradius",
+    deleteliveobj = {
+        name = "liveobjd",
     },
-    repairvehicle = {
-        name = "repairvehicle",
+    livemarker = {
+        name = "livemarker",
     },
     coords3 = {
         name = "coords3",
@@ -65,12 +65,6 @@ AD.Commands = {
     },
     togglecoords = {
         name = "togglecoords",
-    },
-    livemarker = {
-        name = "livemarker",
-    },
-    setstress = {
-        name = "setstress",
     },
     getidentifier = {
         name = "getidentifier",
@@ -99,8 +93,14 @@ AD.Commands = {
     showcarinfo = {
         name = "showcarinfo",
     },
-    applyeffect = {
-        name = "applyeffect",
+    delvehicle = {
+        name = "delvehicle",
+    },
+    delvehicleinradius = {
+        name = "delvehicleinradius",
+    },
+    repairvehicle = {
+        name = "repairvehicle",
     },
     livery = {
         name = "livery",
@@ -146,6 +146,18 @@ AD.Commands = {
     },
     setarmor = {
         name = "setarmor",
+    },
+    setstress = {
+        name = "setstress",
+    },
+    sethunger = {
+        name = "sethunger",
+    },
+    setthirst = {
+        name = "setthirst",
+    },
+    applyeffect = {
+        name = "applyeffect",
     },
     die = {
         name = "die",
