@@ -3,6 +3,14 @@ QBCore = exports['qb-core']:GetCoreObject()
 local effects = LoadResourceFile(GetCurrentResourceName(), 'shared/effects.lua')
 effects = load(effects)()
 
+local function IsCommandEnabled(commandName)
+    local commandConfig = AD.Commands[commandName]
+    if commandConfig and commandConfig.enabled then
+        return true
+    end
+    return false
+end
+
 QBCore.Commands.Add(AD.Commands.isadmin.name, "Check if you're an admin", {}, false, function(source, args)
     local Player = QBCore.Functions.GetPlayer(source)
     local isAdmin = QBCore.Functions.HasPermission(source, "admin")
