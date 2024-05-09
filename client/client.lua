@@ -1,6 +1,7 @@
 QBCore = exports['qb-core']:GetCoreObject()
 
 local polyzonePoints = {}
+local placedObjects = {}
 local playerPedId
 local showDevInfo = false
 local invincible = false
@@ -23,8 +24,11 @@ local baseSpeed = 1.0
 local speedMultiplier = 1.0
 local defaultSpeedMultiplier = 1.0
 local arrowRotation = 0.0
+local objectRotation = 0.0
 local arrowHeading = 0.0
+local objectHeading = 0.0
 local arrowHeight = 0.0
+local objectHeight = 0.0
 local forwardOffset = 0.0
 local lateralOffset = 0.0
 local fixedZLevel = 0.0
@@ -35,7 +39,7 @@ local function copyToClipboard(coordinateText, coordType)
         action = "copy",
         text = coordinateText
     })
-    QBCore.Functions.Notify("Your " .. coordType .. " coordinates are: " .. coordinateText .. " (Copied to clipboard)", "success")
+    QBCore.Functions.Notify("Saved: " .. coordinateText .. " (Copied to clipboard)", "success")
 end
 
 RegisterNetEvent("atiya-dev:copyToClipboard", function(coordinateText, type)
@@ -846,13 +850,12 @@ RegisterNetEvent('atiya-dev:showNearbyPeds', function()
             local playerCoords = GetEntityCoords(playerPed)
             local radius = 5.0
             local peds = {}
-
             for ped in EnumeratePeds2() do
                 if IsPedHuman(ped) then
                     local pedCoords = GetEntityCoords(ped)
                     if #(playerCoords - pedCoords) <= radius then
                         local hash = GetEntityModel(ped)
-                        local archetypeName = GetEntityArchetypeName(ped)  -- Use archetype name if available
+                        local archetypeName = GetEntityArchetypeName(ped)
                         local displayName = archetypeName ~= '' and archetypeName or 'Unknown Archetype'
 
                         table.insert(peds, {name = displayName, hash = hash, coords = pedCoords, entity = ped})
@@ -883,11 +886,9 @@ function DrawText3D4(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
     local px, py, pz = table.unpack(GetGameplayCamCoords())
     local dist = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)
-
     local scale = (1 / dist) * 2
     local fov = (1 / GetGameplayCamFov()) * 100
     local scale = scale * fov
-
     if onScreen then
         SetTextScale(0.0, 0.35 * scale)
         SetTextFont(4)
@@ -919,3 +920,66 @@ function DrawBoxAroundEntity2(entity)
         DrawLine(line[1].x, line[1].y, line[1].z, line[2].x, line[2].y, line[2].z, 255, 0, 0, 255)
     end
 end
+
+RegisterNetEvent('atiya-dev:startObjectPlacement', function(objectModel)
+    local objectActive = true
+    local playerPed = PlayerPedId()
+    local objectHash = GetHashKey(objectModel)
+    RequestModel(objectHash)
+    while not HasModelLoaded(objectHash) do
+        Citizen.Wait(10)
+    end
+    local spawnPos = GetEntityCoords(playerPed) + GetEntityForwardVector(playerPed) * 2.0
+    local placedObject = CreateObject(objectHash, spawnPos.x, spawnPos.y, spawnPos.z, true, true, true)
+    table.insert(placedObjects, placedObject)
+    TriggerEvent('QBCore:Notify', 'F2 and F3: L/R, ALT and `: F/B, [ and ]: Rotate', 'primary') 
+    Citizen.CreateThread(function()
+        while objectActive do
+            Citizen.Wait(0)
+            local coords = GetEntityCoords(placedObject)
+            local headingRad = math.rad(GetEntityHeading(placedObject))
+            local forwardVec = vector3(math.cos(headingRad), math.sin(headingRad), 0.0)
+            local rightVec = vector3(math.sin(headingRad), -math.cos(headingRad), 0.0)
+            local newCoords = coords
+            if IsControlPressed(0, 289) then
+                newCoords = newCoords + forwardVec * 0.05
+            elseif IsControlPressed(0, 170) then
+                newCoords = newCoords - forwardVec * 0.05
+            end
+            if IsControlPressed(0, 243) then
+                newCoords = newCoords - rightVec * 0.05
+            elseif IsControlPressed(0, 19) then
+                newCoords = newCoords + rightVec * 0.05
+            end
+            if IsControlPressed(0, 172) then
+                newCoords = vector3(newCoords.x, newCoords.y, newCoords.z + 0.05)
+            elseif IsControlPressed(0, 173) then
+                newCoords = vector3(newCoords.x, newCoords.y, newCoords.z - 0.05)
+            end
+            if IsControlPressed(0, 39) then
+                SetEntityRotation(placedObject, vector3(0.0, 0.0, GetEntityRotation(placedObject, 2).z - 0.5))
+            elseif IsControlPressed(0, 40) then
+                SetEntityRotation(placedObject, vector3(0.0, 0.0, GetEntityRotation(placedObject, 2).z + 0.5))
+            end  
+            SetEntityCoords(placedObject, newCoords.x, newCoords.y, newCoords.z)
+            if IsControlJustReleased(0, 38) then
+                local heading = GetEntityHeading(placedObject)
+                local objectName = getObjectNameFromHash(objectHash)
+                local coordsText = string.format('Object: %s, Hash: %d, vector4(%.2f, %.2f, %.2f, %.2f)', objectName, objectHash, newCoords.x, newCoords.y, newCoords.z, heading)
+                TriggerEvent("atiya-dev:copyToClipboard", coordsText, "vector4")
+                objectActive = false
+                FreezeEntityPosition(placedObject, true)
+            end
+        end
+    end)
+end)
+
+RegisterCommand(AD.Commands.deleteliveobj.name, function()
+    for _, object in ipairs(placedObjects) do
+        if DoesEntityExist(object) then
+            DeleteObject(object)
+        end
+    end
+    placedObjects = {}
+    TriggerEvent('QBCore:Notify', 'All objects deleted.', 'success')
+end, false)
