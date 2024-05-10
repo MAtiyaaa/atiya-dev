@@ -483,3 +483,75 @@ RegisterCommand(AD.Commands.setthirst.name, function(source, args, rawCommand)
         TriggerClientEvent('QBCore:Notify', source, 'Enter a value between 0 and 100.', 'error')
     end
 end, false)
+
+RegisterCommand("giveitema", function(source, args)
+    local playerid = tonumber(args[1])
+    local item = args[2]
+    local amount = tonumber(args[3]) or 1
+    local targetPlayer = QBCore.Functions.GetPlayer(playerid)
+    if targetPlayer then
+        targetPlayer.Functions.AddItem(item, amount)
+        TriggerClientEvent('QBCore:Notify', source, 'Item given successfully.', 'success')
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
+    end
+end, false)
+
+RegisterCommand("setjoba", function(source, args)
+    local playerid = tonumber(args[1])
+    local job = args[2]
+    local grade = tonumber(args[3]) or 0
+    local targetPlayer = QBCore.Functions.GetPlayer(playerid)
+    if targetPlayer then
+        targetPlayer.Functions.SetJob(job, grade)
+        TriggerClientEvent('QBCore:Notify', source, 'Job set successfully.', 'success')
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
+    end
+end, false)
+
+RegisterCommand("tpto", function(source, args)
+    local playerid = tonumber(args[1])
+    local x = tonumber(args[2])
+    local y = tonumber(args[3])
+    local z = tonumber(args[4])
+    local heading = tonumber(args[5]) or 0
+    if x and y and z then
+        TriggerClientEvent('QBCore:Command:TeleportToCoords', playerid, x, y, z, heading)
+    else
+        local targetPlayer = QBCore.Functions.GetPlayer(playerid)
+        if targetPlayer then
+            local ped = GetPlayerPed(targetPlayer.PlayerData.source)
+            local coords = GetEntityCoords(ped)
+            TriggerClientEvent('QBCore:Command:TeleportToCoords', source, coords.x, coords.y, coords.z)
+        else
+            TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
+        end
+    end
+end, false)
+
+RegisterCommand("tptop", function(source, args)
+    local playerid = tonumber(args[1])
+    local otherplayerid = tonumber(args[2])
+    local targetPlayer = QBCore.Functions.GetPlayer(otherplayerid)
+    if targetPlayer then
+        local ped = GetPlayerPed(targetPlayer.PlayerData.source)
+        local coords = GetEntityCoords(ped)
+        TriggerClientEvent('QBCore:Command:TeleportToCoords', playerid, coords.x, coords.y, coords.z)
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
+    end
+end, false)
+
+RegisterCommand("bringa", function(source, args)
+    local playerid = tonumber(args[1])
+    local otherplayerid = tonumber(args[2])
+    local targetPlayer = QBCore.Functions.GetPlayer(otherplayerid)
+    if targetPlayer then
+        local ped = GetPlayerPed(targetPlayer.PlayerData.source)
+        local coords = GetEntityCoords(ped)
+        TriggerClientEvent('QBCore:Command:TeleportToCoords', playerid, coords.x, coords.y, coords.z)
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
+    end
+end, false)
