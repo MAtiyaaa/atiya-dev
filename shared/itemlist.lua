@@ -1,6 +1,6 @@
-
 -- credits to VenomXNL https://github.com/VenomXNL/
-local FoundObjects = {
+
+FoundObjects = {
     {HashIs = -1267889684, ModNam = '02gate3_l'},
     {HashIs = -832573324, ModNam = 'a_c_boar'},
     {HashIs = 1462895032, ModNam = 'a_c_cat_01'},
