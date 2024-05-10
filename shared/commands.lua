@@ -53,6 +53,26 @@ AD.Commands = {
         enabled = true,
         name = "unfreeze",
     },
+    tptom = {
+        enabled = true,
+        name = "tptom",
+    },
+    tptop = {
+        enabled = true,
+        name = "tptop",
+    },
+    tpto = {
+        enabled = true,
+        name = "tpto",
+    },
+    setjoba = {
+        enabled = true,
+        name = "setjoba",
+    },
+    giveitema = {
+        enabled = true,
+        name = "giveitema",
+    },
     spawnobject = {
         enabled = true,
         name = "spawnobject",
@@ -72,6 +92,10 @@ AD.Commands = {
     deleteliveobj = {
         enabled = true,
         name = "liveobjd",
+    },
+    liveobjedit = {
+        enabled = true,
+        name = "liveobjedit",
     },
     livemarker = {
         enabled = true,
