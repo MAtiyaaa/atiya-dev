@@ -1,6 +1,6 @@
 -- credits go to https://gist.github.com/BeyondPvP/f8ab34c8b207afddfa9dd5a1b864c7fe
 
-local weaponnames = {
+weaponnames = {
     {GunHash = -1075685676, GunName = 'WEAPON_PISTOL_MK2'},
     {GunHash = 126349499, GunName = 'WEAPON_SNOWBALL'},
     {GunHash = -270015777, GunName = 'WEAPON_ASSAULTSMG'},
