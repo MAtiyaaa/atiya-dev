@@ -31,14 +31,6 @@ local lateralOffset = 0.0
 local fixedZLevel = 0.0
 local markerPosition = vector3(0.0, 0.0, 0.0)
 
-local function IsCommandEnabled(commandName)
-    local commandConfig = AD.Commands[commandName]
-    if commandConfig and commandConfig.enabled then
-        return true
-    end
-    return false
-end
-
 local function copyToClipboard(coordinateText, coordType)
     SendNUIMessage({
         action = "copy",
@@ -485,7 +477,7 @@ RegisterNetEvent('atiya-dev:toggleDevInfo', function()
                 if vehicle ~= 0 then
                     local engineHealth = GetVehicleEngineHealth(vehicle)
                     local bodyHealth = GetVehicleBodyHealth(vehicle)
-                    local fuelLevel = exports['ps-fuel']:GetFuel(vehicle)
+                    local fuelLevel = exports[ADC.Config.Fuel]:GetFuel(vehicle)
                     local currentSpeed = GetEntitySpeed(vehicle)
                     local turnRate = GetVehicleSteeringAngle(vehicle)
                     local rpm = GetVehicleCurrentRpm(vehicle)
@@ -549,7 +541,7 @@ RegisterNetEvent('atiya-dev:repairAndRefuelVehicle', function()
         SetVehicleFixed(vehicle)
         SetVehicleEngineHealth(vehicle, 1000.0)
         SetVehicleBodyHealth(vehicle, 1000.0)
-        exports['ps-fuel']:SetFuel(vehicle, 100)
+        exports[ADC.Config.Fuel]:SetFuel(vehicle, 100)
         TriggerEvent('QBCore:Notify', 'Vehicle repaired and refueled.', 'success')
     else
         TriggerEvent('QBCore:Notify', 'Not in a vehicle.', 'error')
@@ -767,32 +759,6 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterCommand(AD.Commands.noclip.name, function()
-    toggleNoclipMode()
-end, false)
-
-RegisterCommand(AD.Commands.addAttachments.name, function()
-    local playerPed = PlayerPedId()
-    local currentWeapon = GetSelectedPedWeapon(playerPed)
-    print("Current weapon hash:", currentWeapon)
-
-    if COMPONENTS[currentWeapon] then
-        for _, component in ipairs(COMPONENTS[currentWeapon]) do
-            local componentHash = GetHashKey(component)
-            GiveWeaponComponentToPed(playerPed, currentWeapon, componentHash)
-            print("Adding component:", component)
-        end
-        TriggerEvent('QBCore:Notify', 'All attachments added to your weapon.', 'success')
-    else
-        print("No attachments available for this weapon.")
-        TriggerEvent('QBCore:Notify', 'No attachments available for this weapon.', 'error')
-    end
-end, false)
-
-RegisterCommand(AD.Commands.resetped.name, function()
-    TriggerServerEvent('atiya-dev:resetPed') 
-end, false)
-
 RegisterNetEvent('atiya-dev:setHealth', function(health)
     SetEntityHealth(PlayerPedId(), health) 
 end)
@@ -800,12 +766,6 @@ end)
 RegisterNetEvent('atiya-dev:setArmor', function(armor)
     SetPedArmour(PlayerPedId(), armor) 
 end)
-
-RegisterCommand(AD.Commands.die.name, function()
-    local myPed = PlayerPedId()
-    SetEntityHealth(myPed, 0)
-    TriggerEvent('QBCore:Notify', 'You have died', 'error') 
-end, false)
 
 RegisterNetEvent('atiya-dev:client:GetCuffed', function(handcuffed)
     atiyacuff = handcuffed
@@ -936,7 +896,7 @@ RegisterNetEvent('atiya-dev:startObjectPlacement', function(objectModel)
     local spawnPos = GetEntityCoords(playerPed) + GetEntityForwardVector(playerPed) * 2.0
     local placedObject = CreateObject(objectHash, spawnPos.x, spawnPos.y, spawnPos.z, true, true, true)
     table.insert(placedObjects, placedObject)
-    TriggerEvent('QBCore:Notify', 'F2 and F3: L/R, ALT and `: F/B, [ and ]: Rotate', 'primary') 
+    TriggerEvent('QBCore:Notify', 'F2 and F3: L/R, ALT and `: F/B, [ and ]: Rotate Y, - and =: Rotate Z, , and .: Rotate X', 'primary')
     Citizen.CreateThread(function()
         while objectActive do
             Citizen.Wait(0)
@@ -960,11 +920,23 @@ RegisterNetEvent('atiya-dev:startObjectPlacement', function(objectModel)
             elseif IsControlPressed(0, 173) then
                 newCoords = vector3(newCoords.x, newCoords.y, newCoords.z - 0.05)
             end
+            local rotation = GetEntityRotation(placedObject, 2)
             if IsControlPressed(0, 39) then
-                SetEntityRotation(placedObject, vector3(0.0, 0.0, GetEntityRotation(placedObject, 2).z - 0.5))
+                rotation = vector3(rotation.x, rotation.y, rotation.z - 0.5)
             elseif IsControlPressed(0, 40) then
-                SetEntityRotation(placedObject, vector3(0.0, 0.0, GetEntityRotation(placedObject, 2).z + 0.5))
-            end  
+                rotation = vector3(rotation.x, rotation.y, rotation.z + 0.5)
+            end
+            if IsControlPressed(0, 81) then
+                rotation = vector3(rotation.x - 0.5, rotation.y, rotation.z)
+            elseif IsControlPressed(0, 82) then
+                rotation = vector3(rotation.x + 0.5, rotation.y, rotation.z)
+            end
+            if IsControlPressed(0, 83) then
+                rotation = vector3(rotation.x, rotation.y - 0.5, rotation.z)
+            elseif IsControlPressed(0, 84) then
+                rotation = vector3(rotation.x, rotation.y + 0.5, rotation.z)
+            end
+            SetEntityRotation(placedObject, rotation, 2)
             SetEntityCoords(placedObject, newCoords.x, newCoords.y, newCoords.z)
             if IsControlJustReleased(0, 38) then
                 local heading = GetEntityHeading(placedObject)
@@ -978,15 +950,6 @@ RegisterNetEvent('atiya-dev:startObjectPlacement', function(objectModel)
     end)
 end)
 
-RegisterCommand(AD.Commands.deleteliveobj.name, function()
-    for _, object in ipairs(placedObjects) do
-        if DoesEntityExist(object) then
-            DeleteObject(object)
-        end
-    end
-    placedObjects = {}
-    TriggerEvent('QBCore:Notify', 'All objects deleted.', 'success')
-end, false)
 
 RegisterNetEvent('atiya-dev:startPedPlacement', function(pedModel)
     local pedActive = true
@@ -1043,87 +1006,6 @@ RegisterNetEvent('atiya-dev:startPedPlacement', function(pedModel)
     end)
 end)
 
-RegisterCommand(AD.Commands.deleteliveped.name, function()
-    for _, ped in ipairs(placedPeds) do
-        if DoesEntityExist(ped) then
-            DeletePed(ped)
-        end
-    end
-    placedPeds = {}
-    TriggerEvent('QBCore:Notify', 'All peds deleted.', 'success')
-end, false)
-
-RegisterCommand(AD.Commands.liveped.name, function(source, args)
-    local pedModel = args[1]
-    if pedModel then
-        TriggerEvent('atiya-dev:startPedPlacement', pedModel)
-    else
-        TriggerEvent('QBCore:Notify', 'Usage: ped name', 'error')
-    end
-end, false)
-
-RegisterCommand(AD.Commands.tptom.name, function(source, args)
-    local PlayerPedId = PlayerPedId
-    local GetEntityCoords = GetEntityCoords
-    local GetGroundZFor_3dCoord = GetGroundZFor_3dCoord
-    local blipMarker <const> = GetFirstBlipInfoId(8)
-    if not DoesBlipExist(blipMarker) then
-        TriggerEvent('QBCore:Notify', 'No waypoint set', 'error', 5000)
-        return 'marker'
-    end
-    local ped, coords <const> = PlayerPedId(), GetBlipInfoIdCoord(blipMarker)
-    local vehicle = GetVehiclePedIsIn(ped, false)
-    local oldCoords <const> = GetEntityCoords(ped)
-    local x, y, groundZ, Z_START = coords['x'], coords['y'], 850.0, 950.0
-    local found = false
-    if vehicle > 0 then
-        FreezeEntityPosition(vehicle, true)
-    else
-        FreezeEntityPosition(ped, true)
-    end
-    for i = Z_START, 0, -25.0 do
-        local z = i
-        if (i % 2) ~= 0 then
-            z = Z_START - i
-        end
-        NewLoadSceneStart(x, y, z, x, y, z, 50.0, 0)
-        local curTime = GetGameTimer()
-        while IsNetworkLoadingScene() do
-            if GetGameTimer() - curTime > 1000 then
-                break
-            end
-            Wait(0)
-        end
-        NewLoadSceneStop()
-        SetPedCoordsKeepVehicle(ped, x, y, z)
-        while not HasCollisionLoadedAroundEntity(ped) do
-            RequestCollisionAtCoord(x, y, z)
-            if GetGameTimer() - curTime > 1000 then
-                break
-            end
-            Wait(0)
-        end
-        found, groundZ = GetGroundZFor_3dCoord(x, y, z, false);
-        if found then
-            Wait(0)
-            SetPedCoordsKeepVehicle(ped, x, y, groundZ)
-            break
-        end
-        Wait(0)
-    end
-    if vehicle > 0 then
-        FreezeEntityPosition(vehicle, false)
-    else
-        FreezeEntityPosition(ped, false)
-    end
-    if not found then
-        SetPedCoordsKeepVehicle(ped, oldCoords['x'], oldCoords['y'], oldCoords['z'] - 1.0)
-        TriggerEvent('QBCore:Notify', 'Could not teleport', 'error', 5000)
-    end
-    SetPedCoordsKeepVehicle(ped, x, y, groundZ)
-    TriggerEvent('QBCore:Notify','Teleported to waypoint', 'success', 5000)
-end)
-
 function GetGroundZCoord(coords)
     if not coords then return end
     local retval, groundZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 0)
@@ -1157,101 +1039,6 @@ function DrawText3Ds(x, y, z, text)
     local factor = (string.len(text)) / 370
     DrawRect(_x, _y + 0.0145, 0.015 + factor, 0.03, 41, 11, 41, 68)
 end
-
-RegisterCommand(AD.Commands.liveobjedit.name, function(source, args)
-    local playerPed = PlayerPedId()
-    local propName = args[1]
-    local boneInput = args[2]
-    local boneId = getBoneIdFromInput(boneInput)
-    local boneName = bones[boneId].BoneName
-    local propHash = GetHashKey(propName)
-    RequestModel(propHash)
-    while not HasModelLoaded(propHash) do
-        Citizen.Wait(100)
-        RequestModel(propHash)
-    end
-    local playerCoords = GetEntityCoords(playerPed)
-    local prop = CreateObject(propHash, playerCoords.x, playerCoords.y, playerCoords.z, false, false, false)
-    local boneIndex = GetPedBoneIndex(playerPed, boneId)
-    AttachEntityToEntity(prop, playerPed, boneIndex, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, true, true, true, false, 1, true)
-    local offset = vector3(0.0, 0.0, 0.0)
-    local rotation = vector3(0.0, 0.0, 0.0)
-    local text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-    local text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-    TriggerEvent('QBCore:Notify', 'Editing live object. View the script to see the commands, it\'s too many', 'primary')
-    Citizen.CreateThread(function()
-        local active = true
-        while active do
-            Citizen.Wait(0)
-            if IsControlPressed(0, 289) then
-                offset = offset + vector3(0.0025, 0, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            elseif IsControlPressed(0, 170) then
-                offset = offset - vector3(0.0025, 0, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            end
-            if IsControlPressed(0, 243) then
-                offset = offset - vector3(0, 0.0025, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            elseif IsControlPressed(0, 19) then
-                offset = offset + vector3(0, 0.0025, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            end
-            if IsControlPressed(0, 172) then
-                offset = offset + vector3(0, 0, 0.0025)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            elseif IsControlPressed(0, 173) then
-                offset = offset - vector3(0, 0, 0.0025)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            end
-            if IsControlPressed(0, 39) then
-                rotation = rotation - vector3(0, 0, 0.5)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            elseif IsControlPressed(0, 40) then
-                rotation = rotation + vector3(0, 0, 0.5)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            end
-            if IsControlPressed(0, 111) then
-                rotation = rotation - vector3(0, 0.5, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            elseif IsControlPressed(0, 110) then
-                rotation = rotation + vector3(0, 0.5, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            end
-            if IsControlPressed(0, 117) then
-                rotation = rotation - vector3(0.5, 0, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            elseif IsControlPressed(0, 118) then
-                rotation = rotation + vector3(0.5, 0, 0)
-                text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
-                text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-            end
-            AttachEntityToEntity(prop, playerPed, boneIndex, offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z, true, true, true, false, 1, true)
-            DrawTextOnScreen3(text, 0.7, 0.2, 0.35, 0)
-            DrawTextOnScreen3(text2, 0.9, 0.2, 0.35, 0)
-            if IsControlJustReleased(0, 38) then
-                local coordsText = string.format('Prop: %s, Hash: %d, Bone: %s (%d), Offset: %.2f, %.2f, %.2f, Rotation: %s', propName, propHash, boneName, boneId, tostring(offset), tostring(rotation))
-                TriggerEvent("atiya-dev:copyToClipboard", coordsText, "vector4")
-                active = false
-                FreezeEntityPosition(prop, true)
-            end
-        end
-        if not active then
-            DeleteObject(prop)
-        end
-    end)
-end)
 
 function DrawTextOnScreen3(text, x, y, scale, font)
     SetTextFont(font or 4)
