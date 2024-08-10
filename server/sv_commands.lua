@@ -3,20 +3,33 @@ QBCore = exports['qb-core']:GetCoreObject()
 local effects = LoadResourceFile(GetCurrentResourceName(), 'shared/db/effects.lua')
 effects = load(effects)()
 
-local commandConfig = AD.Commands[commandName]
-
 local function IsCommandEnabled(commandName)
+    local commandConfig = AD.Commands[commandName]
     if commandConfig and commandConfig.enabled then
+        if ADC.Config.Debug then
+            print("Command " .. commandName .. " is enabled.")
+        end
         return true
+    else
+        if ADC.Config.Debug then
+            print("Command " .. commandName .. " is not enabled or does not exist.")
+        end
     end
     return false
 end
 
 local function RegisterQBCoreCommand(commandConfig, commandCallback)
     if IsCommandEnabled(commandConfig.name) then
-        QBCore.Commands.Add(commandConfig.name, commandConfig.description, commandConfig.parameters, false, function(source, args)
+        if ADC.Config.Debug then
+            print("Registering command: " .. commandConfig.name)
+        end
+        QBCore.Commands.Add(commandConfig.name, commandConfig.description, commandConfig.parameters or {}, false, function(source, args)
             commandCallback(source, args)
-        end, commandConfig.usage)
+        end, commandConfig.usage or "")
+    else
+        if ADC.Config.Debug then
+            print("Command " .. commandConfig.name .. " is not registered because it is disabled.")
+        end
     end
 end
 
