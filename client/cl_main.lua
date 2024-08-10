@@ -157,7 +157,7 @@ RegisterNetEvent('atiya-dev:startMarkerPointing', function()
     if markerActive then
         local playerPed = PlayerPedId()
         markerPosition = GetEntityCoords(playerPed)
-        TriggerEvent('QBCore:Notify', 'Marker coordinates mode enabled. Use arrow keys to rotate. Press E to save coordinates. Use F2/F3 for forward/backward movement, ` and Alt for left/right.', 'success')
+        TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Marker Pointing.', 'primary')
         Citizen.CreateThread(function()
             while markerActive do
                 Citizen.Wait(0)
@@ -262,7 +262,7 @@ RegisterNetEvent('atiya-dev:startPolyzone', function()
     polyzoneActive = true
     local playerPed = PlayerPedId()
     fixedZLevel = GetEntityCoords(playerPed).z
-    TriggerEvent('QBCore:Notify', 'Polyzone drawing started. Use /subpolya to add points and /finishpolya to complete.', 'success')
+    TriggerEvent('QBCore:Notify', 'Polyzone drawing started. Now add your points!', 'success')
 end)
 
 local function DrawWall(p1, p2, zMin, zMax, colorR, colorG, colorB, alpha)
@@ -278,7 +278,7 @@ end
 
 RegisterNetEvent('atiya-dev:addPolyzonePoint', function()
     if not polyzoneActive then
-        TriggerEvent('QBCore:Notify', 'Polyzone drawing not started. Use /drawpolya first.', 'error')
+        TriggerEvent('QBCore:Notify', 'Polyzone not started. Start one first.', 'error')
         return
     end
     local playerPed = PlayerPedId()
@@ -301,7 +301,7 @@ end)
 
 RegisterNetEvent('atiya-dev:finishPolyzone', function()
     if not polyzoneActive then
-        TriggerEvent('QBCore:Notify', 'Polyzone drawing not started. Use /drawpolya first.', 'error')
+        TriggerEvent('QBCore:Notify', 'Polyzone not started. Start one first.', 'error')
         return
     end
     polyzoneActive = false
@@ -377,7 +377,7 @@ function DrawBoxAroundEntity(entity)
         {a, e}, {b, f}, {c, g}, {d, h}
     }
     for _, line in ipairs(lines) do
-        DrawLine(line[1].x, line[1].y, line[1].z, line[2].x, line[2].y, line[2].z, 255, 0, 0, 255)
+        DrawLine(line[1].x, line[1].y, line[1].z, line[2].x, line[2].y, line[2].z, 0, 0, 255, 255)
     end
 end
 
@@ -881,7 +881,7 @@ function DrawBoxAroundEntity2(entity)
         {a, e}, {b, f}, {c, g}, {d, h}
     }
     for _, line in ipairs(lines) do
-        DrawLine(line[1].x, line[1].y, line[1].z, line[2].x, line[2].y, line[2].z, 255, 0, 0, 255)
+        DrawLine(line[1].x, line[1].y, line[1].z, line[2].x, line[2].y, line[2].z, 0, 0, 255, 255)
     end
 end
 
@@ -896,7 +896,7 @@ RegisterNetEvent('atiya-dev:startObjectPlacement', function(objectModel)
     local spawnPos = GetEntityCoords(playerPed) + GetEntityForwardVector(playerPed) * 2.0
     local placedObject = CreateObject(objectHash, spawnPos.x, spawnPos.y, spawnPos.z, true, true, true)
     table.insert(placedObjects, placedObject)
-    TriggerEvent('QBCore:Notify', 'F2 and F3: L/R, ALT and `: F/B, [ and ]: Rotate Y, - and =: Rotate Z, , and .: Rotate X', 'primary')
+    TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Object Placement', 'primary')
     Citizen.CreateThread(function()
         while objectActive do
             Citizen.Wait(0)
@@ -965,7 +965,7 @@ RegisterNetEvent('atiya-dev:startPedPlacement', function(pedModel)
     SetPedCanRagdoll(placedPed, false)
     FreezeEntityPosition(placedPed, true)
     table.insert(placedPeds, placedPed)
-    TriggerEvent('QBCore:Notify', 'F2 and F3: L/R, ALT and `: F/B, [ and ]: Rotate', 'primary')
+    TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Ped Placement', 'primary')
     Citizen.CreateThread(function()
         while pedActive do
             Citizen.Wait(0)
@@ -1208,7 +1208,7 @@ AddEventHandler('atiya-dev:liveobjedit', function(args)
     local rotation = vector3(0.0, 0.0, 0.0)
     local text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
     local text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-    TriggerEvent('QBCore:Notify', 'Editing live object. View the script to see the commands, it\'s too many', 'primary')
+    TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Bone Placement.', 'primary')
     Citizen.CreateThread(function()
         local active = true
         while active do
@@ -1241,29 +1241,29 @@ AddEventHandler('atiya-dev:liveobjedit', function(args)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             end
             if IsControlPressed(0, 39) then
-                rotation = rotation - vector3(0, 0, 0.025)
+                rotation = rotation - vector3(0, 0, 0.5)
                 text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             elseif IsControlPressed(0, 40) then
-                rotation = rotation + vector3(0, 0, 0.025)
+                rotation = rotation + vector3(0, 0, 0.5)
                 text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             end
             if IsControlPressed(0, 111) then
-                rotation = rotation - vector3(0, 0.025, 0)
+                rotation = rotation - vector3(0, 0.5, 0)
                 text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             elseif IsControlPressed(0, 110) then
-                rotation = rotation + vector3(0, 0.025, 0)
+                rotation = rotation + vector3(0, 0.5, 0)
                 text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             end
             if IsControlPressed(0, 117) then
-                rotation = rotation - vector3(0.025, 0, 0)
+                rotation = rotation - vector3(0.5, 0, 0)
                 text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             elseif IsControlPressed(0, 118) then
-                rotation = rotation + vector3(0.025, 0, 0)
+                rotation = rotation + vector3(0.5, 0, 0)
                 text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
                 text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
             end
