@@ -25,7 +25,7 @@
   
 ![image](https://i.imgur.com/KnPIwCU.png)
 
- * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.
+ * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
 
 
 ![image](https://i.imgur.com/mTn1eyf.png)
