@@ -240,8 +240,8 @@ AD.Commands = {
     },
     showcarinfo = {
         enabled = true,
-        name = "showcarinfo",
-        usage = "/showcarinfo",
+        name = "togglecarinfo",
+        usage = "/togglecarinfo",
         description = "Show information about the current vehicle.",
         parameters = {}
     },
@@ -466,13 +466,6 @@ AD.Commands = {
             {name = "targetPlayerId", help = "ID of the target player"}
         }
     },
-    invincibility = {
-        enabled = true,
-        name = "invincibility",
-        usage = "/invincibility",
-        description = "Toggle invincibility mode for yourself.",
-        parameters = {}
-    },
     noclip = {
         enabled = true,
         name = "noclipa",
@@ -491,9 +484,9 @@ AD.Commands = {
     },
     liveobjedit = {
         enabled = true,
-        name = "liveobjedit",
-        usage = "/liveobjedit [object name] [bone name]",
-        description = "Start editing a placed object.",
+        name = "boneobj",
+        usage = "/boneobj [object name] [bone name]",
+        description = "Edit the position of a object on one of your bones.",
         parameters = {
             {name = "objectName", help = "Name or hash of the object"},
             {name = "boneName", help = "Name or ID of the bone to attach the object"}
@@ -510,7 +503,7 @@ AD.Commands = {
         enabled = true,
         name = "die",
         usage = "/die",
-        description = "Kill your player instantly.",
+        description = "Kill yourself.",
         parameters = {}
     },
     handcuff = {
