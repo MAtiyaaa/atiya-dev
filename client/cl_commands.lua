@@ -1,19 +1,32 @@
 QBCore = exports['qb-core']:GetCoreObject()
 
-local commandConfig = AD.Commands[commandName]
-
 local function IsCommandEnabled(commandName)
+    local commandConfig = AD.Commands[commandName]
     if commandConfig and commandConfig.enabled then
+        if ADC.Config.Debug then
+            print("Command " .. commandName .. " is enabled.")
+        end
         return true
+    else
+        if ADC.Config.Debug then
+            print("Command " .. commandName .. " is not enabled or does not exist.")
+        end
     end
     return false
 end
 
 local function RegisterQBCoreCommand(commandConfig, commandCallback)
     if IsCommandEnabled(commandConfig.name) then
-        QBCore.Commands.Add(commandConfig.name, commandConfig.description, commandConfig.parameters, false, function(source, args)
+        if ADC.Config.Debug then
+            print("Registering command: " .. commandConfig.name)
+        end
+        QBCore.Commands.Add(commandConfig.name, commandConfig.description, commandConfig.parameters or {}, false, function(source, args)
             commandCallback(source, args)
-        end, commandConfig.usage)
+        end, commandConfig.usage or "")
+    else
+        if ADC.Config.Debug then
+            print("Command " .. commandConfig.name .. " is not registered because it is disabled.")
+        end
     end
 end
 
@@ -36,17 +49,22 @@ end)
 RegisterQBCoreCommand(AD.Commands.addAttachments.name, function()
     local playerPed = PlayerPedId()
     local currentWeapon = GetSelectedPedWeapon(playerPed)
-    print("Current weapon hash:", currentWeapon)
-
+    if ADC.Config.Debug then
+        print("Current weapon hash:", currentWeapon)
+    end
     if COMPONENTS[currentWeapon] then
         for _, component in ipairs(COMPONENTS[currentWeapon]) do
             local componentHash = GetHashKey(component)
             GiveWeaponComponentToPed(playerPed, currentWeapon, componentHash)
-            print("Adding component:", component)
+            if ADC.Config.Debug then
+                print("Adding component:", component)
+            end
         end
         TriggerEvent('QBCore:Notify', 'All attachments added to your weapon.', 'success')
     else
-        print("No attachments available for this weapon.")
+        if ADC.Config.Debug then
+            print("No attachments available for this weapon.")
+        end
         TriggerEvent('QBCore:Notify', 'No attachments available for this weapon.', 'error')
     end
 end, false)
