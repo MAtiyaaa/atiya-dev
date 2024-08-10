@@ -1075,6 +1075,11 @@ AddEventHandler('atiya-dev:addAttachments', function()
     end
 end)
 
+RegisterNetEvent('atiya-dev:noclip')
+AddEventHandler('atiya-dev:noclip', function()
+    toggleNoclipMode()
+end)
+
 RegisterNetEvent('atiya-dev:resetped')
 AddEventHandler('atiya-dev:resetped', function()
     TriggerServerEvent('atiya-dev:resetPed') 
