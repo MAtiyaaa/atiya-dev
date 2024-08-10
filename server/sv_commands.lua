@@ -3,55 +3,25 @@ QBCore = exports['qb-core']:GetCoreObject()
 local effects = LoadResourceFile(GetCurrentResourceName(), 'shared/db/effects.lua')
 effects = load(effects)()
 
-local function IsCommandEnabled(commandName)
-    local commandConfig = AD.Commands[commandName]
-    if commandConfig and commandConfig.enabled then
-        if ADC.Config.Debug then
-            print("Command " .. commandName .. " is enabled.")
-        end
-        return true
-    else
-        if ADC.Config.Debug then
-            print("Command " .. commandName .. " is not enabled or does not exist.")
-        end
-    end
-    return false
-end
-
-local function RegisterQBCoreCommand(commandConfig, commandCallback)
-    if IsCommandEnabled(commandConfig.name) then
-        if ADC.Config.Debug then
-            print("Registering command: " .. commandConfig.name)
-        end
-        QBCore.Commands.Add(commandConfig.name, commandConfig.description, commandConfig.parameters or {}, false, function(source, args)
-            commandCallback(source, args)
-        end, commandConfig.usage or "")
-    else
-        if ADC.Config.Debug then
-            print("Command " .. commandConfig.name .. " is not registered because it is disabled.")
-        end
-    end
-end
-
 QBCore.Commands.Add(AD.Commands.isadmin.name, "Check if you're an admin", {}, false, function(source, args)
     local Player = QBCore.Functions.GetPlayer(source)
     local isAdmin = QBCore.Functions.HasPermission(source, "admin")
     TriggerClientEvent("QBCore:Notify", source, "Admin status: " .. (isAdmin and "Yes" or "No"), isAdmin and "success" or "error")
-end, false)
+end, AD.Commands.isadmin.usage)
 
 QBCore.Commands.Add(AD.Commands.jobname.name, "Check your job name", {}, false, function(source, args)
     local Player = QBCore.Functions.GetPlayer(source)
     if Player then
         TriggerClientEvent("QBCore:Notify", source, "Your job name: " .. Player.PlayerData.job.name, "success")
     end
-end, false)
+end, AD.Commands.jobname.usage)
 
 QBCore.Commands.Add(AD.Commands.jobtype.name, "Check your job type", {}, false, function(source, args)
     local Player = QBCore.Functions.GetPlayer(source)
     if Player then
         TriggerClientEvent("QBCore:Notify", source, "Your job type: " .. Player.PlayerData.job.type, "success")
     end
-end, false)
+end, AD.Commands.jobtype.usage)
 
 QBCore.Commands.Add(AD.Commands.who.name, "Check info about another player", {{name = "id", help = "Player ID"}}, false, function(source, args)
     local targetId = tonumber(args[1])
@@ -68,20 +38,20 @@ QBCore.Commands.Add(AD.Commands.who.name, "Check info about another player", {{n
     else
         TriggerClientEvent("QBCore:Notify", source, "Player not found", "error")
     end
-end, false)
+end, AD.Commands.who.usage)
 
 QBCore.Commands.Add(AD.Commands.coords3.name, "Get your current coordinates (vector3)", {}, false, function(source)
     local coords = GetEntityCoords(GetPlayerPed(source))
     local formattedCoords = string.format("vector3(%.2f, %.2f, %.2f)", coords.x, coords.y, coords.z)
     TriggerClientEvent("atiya-dev:copyToClipboard", source, formattedCoords, "vector3")
-end, false)
+end, AD.Commands.coords3.usage)
 
 QBCore.Commands.Add(AD.Commands.coords4.name, "Get your current coordinates (vector4)", {}, false, function(source)
     local coords = GetEntityCoords(GetPlayerPed(source))
     local heading = GetEntityHeading(GetPlayerPed(source))
     local formattedCoords = string.format("vector4(%.2f, %.2f, %.2f, %.2f)", coords.x, coords.y, coords.z, heading)
     TriggerClientEvent("atiya-dev:copyToClipboard", source, formattedCoords, "vector4")
-end, false)
+end, AD.Commands.coords4.usage)
 
 QBCore.Commands.Add(AD.Commands.iteminfo.name, "Get information about an item", {{name = "itemName", help = "Name of the item"}}, false, function(source, args)
     local itemName = args[1]
@@ -96,35 +66,35 @@ QBCore.Commands.Add(AD.Commands.iteminfo.name, "Get information about an item", 
     else
         TriggerClientEvent("QBCore:Notify", source, "Item not found", "error")
     end
-end, false)
+end, AD.Commands.iteminfo.usage)
 
-RegisterQBCoreCommand(AD.Commands.jail.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.jail.name, AD.Commands.jail.description, AD.Commands.jail.parameters, false, function(source, args)
     local playerId = tonumber(args[1])
     local time = tonumber(args[2])
     if playerId and time and time > 0 then
-        exports['qb-jail']:jailPlayer(playerId, true, time)
+        exports[ADC.Config.Jail]:jailPlayer(playerId, true, time)
         TriggerClientEvent('QBCore:Notify', source, ('Player %s jailed for %d minutes'):format(playerId, time), 'success')
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /jaila [playerId] [time]', 'error')
     end
-end, false)
+end, AD.Commands.jail.usage)
 
-RegisterQBCoreCommand(AD.Commands.unjail.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.unjail.name, AD.Commands.unjail.description, AD.Commands.unjail.parameters, false, function(source, args)
     local playerId = tonumber(args[1])
     if playerId then
-        exports['qb-jail']:unJailPlayer(playerId)
+        exports[ADC.Config.Jail]:unJailPlayer(playerId)
         TriggerClientEvent('QBCore:Notify', source, ('Player %s has been released'):format(playerId), 'success')
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /unjaila [playerId]', 'error')
     end
-end, false)
+end, AD.Commands.unjail.usage)
 
-RegisterQBCoreCommand(AD.Commands.god.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.god.name, AD.Commands.god.description, AD.Commands.god.parameters, false, function(source, args)
     local src = source
     TriggerClientEvent('atiya-dev:setInvincibility', src)
-end, false)
+end, AD.Commands.god.usage)
 
-RegisterQBCoreCommand(AD.Commands.invisibility.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.invisibility.name, AD.Commands.invisibility.description, AD.Commands.invisibility.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     if targetPlayerId then
         TriggerClientEvent('atiya-dev:setInvisibility', targetPlayerId)
@@ -132,18 +102,18 @@ RegisterQBCoreCommand(AD.Commands.invisibility.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /inva [player ID]', 'error')
     end
-end, false)
+end, AD.Commands.invisibility.usage)
 
-RegisterQBCoreCommand(AD.Commands.ammo.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.ammo.name, AD.Commands.ammo.description, AD.Commands.ammo.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     if targetPlayerId then
         TriggerClientEvent('atiya-dev:setInfiniteAmmo', targetPlayerId)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /ammoa [player ID]', 'error')
     end
-end, false)
+end, AD.Commands.ammo.usage)
 
-RegisterQBCoreCommand(AD.Commands.freeze.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.freeze.name, AD.Commands.freeze.description, AD.Commands.freeze.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     if targetPlayerId then
         TriggerClientEvent('atiya-dev:freezePlayer', targetPlayerId, true)
@@ -151,9 +121,9 @@ RegisterQBCoreCommand(AD.Commands.freeze.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /freezea [player ID]', 'error')
     end
-end, false)
+end, AD.Commands.freeze.usage)
 
-RegisterQBCoreCommand(AD.Commands.unfreeze.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.unfreeze.name, AD.Commands.unfreeze.description, AD.Commands.unfreeze.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     if targetPlayerId then
         TriggerClientEvent('atiya-dev:freezePlayer', targetPlayerId, false)
@@ -161,57 +131,57 @@ RegisterQBCoreCommand(AD.Commands.unfreeze.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /unfreezea [player ID]', 'error')
     end
-end, false)
+end, AD.Commands.unfreeze.usage)
 
-RegisterQBCoreCommand(AD.Commands.spawnobject.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.spawnobject.name, AD.Commands.spawnobject.description, AD.Commands.spawnobject.parameters, false, function(source, args)
     local objectName = args[1]
     if objectName then
         TriggerClientEvent('atiya-dev:spawnObject', source, objectName)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /obja [object name]', 'error')
     end
-end, false)
+end, AD.Commands.spawnobject.usage)
 
-RegisterQBCoreCommand(AD.Commands.deleteobject.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.deleteobject.name, AD.Commands.deleteobject.description, AD.Commands.deleteobject.parameters, false, function(source, args)
     local objectName = args[1]
     if objectName then
         TriggerClientEvent('atiya-dev:deleteNearbyObject', source, objectName)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /objda [object name]', 'error')
     end
-end, false)
+end, AD.Commands.deleteobject.usage)
 
-RegisterQBCoreCommand(AD.Commands.deleteobjectsinradius.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.deleteobjectsinradius.name, AD.Commands.deleteobjectsinradius.description, AD.Commands.deleteobjectsinradius.parameters, false, function(source, args)
     local radius = tonumber(args[1])
     if radius then
         TriggerClientEvent('atiya-dev:deleteObjectsInRadius', source, radius)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /objdra [radius]', 'error')
     end
-end, false)
+end, AD.Commands.deleteobjectsinradius.usage)
 
-RegisterQBCoreCommand(AD.Commands.delvehicle.name, function(source, _)
+QBCore.Commands.Add(AD.Commands.delvehicle.name, AD.Commands.delvehicle.description, AD.Commands.delvehicle.parameters, false, function(source, _)
     TriggerClientEvent('atiya-dev:deleteVehicleInFront', source)
-end, false)
+end, AD.Commands.delvehicle.usage)
 
-RegisterQBCoreCommand(AD.Commands.delvehicleinradius.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.delvehicleinradius.name, AD.Commands.delvehicleinradius.description, AD.Commands.delvehicleinradius.parameters, false, function(source, args)
     local radius = tonumber(args[1])
     if radius then
         TriggerClientEvent('atiya-dev:deleteVehiclesInRadius', source, radius)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /dvra [radius]', 'error')
     end
-end, false)
+end, AD.Commands.delvehicleinradius.usage)
 
-RegisterQBCoreCommand(AD.Commands.livemarker.name, function(source, _)
+QBCore.Commands.Add(AD.Commands.livemarker.name, AD.Commands.livemarker.description, AD.Commands.livemarker.parameters, false, function(source, _)
     TriggerClientEvent('atiya-dev:startMarkerPointing', source)
-end, false)
+end, AD.Commands.livemarker.usage)
 
-RegisterQBCoreCommand(AD.Commands.togglecoords.name, function(source)
+QBCore.Commands.Add(AD.Commands.togglecoords.name, AD.Commands.togglecoords.description, AD.Commands.togglecoords.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:toggleCoords', source)
-end, false)
+end, AD.Commands.togglecoords.usage)
 
-RegisterQBCoreCommand(AD.Commands.setstress.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.setstress.name, AD.Commands.setstress.description, AD.Commands.setstress.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     local desiredStress = tonumber(args[2])
     if targetPlayerId and desiredStress then
@@ -221,9 +191,9 @@ RegisterQBCoreCommand(AD.Commands.setstress.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /stressa [player_id] [stress level]', 'error')
     end
-end, false)
+end, AD.Commands.setstress.usage)
 
-RegisterQBCoreCommand(AD.Commands.getidentifier.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.getidentifier.name, AD.Commands.getidentifier.description, AD.Commands.getidentifier.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     local identifierType = tostring(args[2]):lower()
     if not targetPlayerId or not identifierType then
@@ -231,42 +201,42 @@ RegisterQBCoreCommand(AD.Commands.getidentifier.name, function(source, args)
         return
     end
     TriggerEvent('atiya-dev:retrieveIdentifier', source, targetPlayerId, identifierType)
-end, false)
+end, AD.Commands.getidentifier.usage)
 
 
-RegisterQBCoreCommand(AD.Commands.startpolyzone.name, function(source)
+QBCore.Commands.Add(AD.Commands.startpolyzone.name, AD.Commands.startpolyzone.description, AD.Commands.startpolyzone.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:startPolyzone', source)
-end, false)
+end, AD.Commands.startpolyzone.usage)
 
-RegisterQBCoreCommand(AD.Commands.addpolyzonepoint.name, function(source)
+QBCore.Commands.Add(AD.Commands.addpolyzonepoint.name, AD.Commands.addpolyzonepoint.description, AD.Commands.addpolyzonepoint.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:addPolyzonePoint', source)
-end, false)
+end, AD.Commands.addpolyzonepoint.usage)
 
-RegisterQBCoreCommand(AD.Commands.finishpolyzone.name, function(source)
+QBCore.Commands.Add(AD.Commands.finishpolyzone.name, AD.Commands.finishpolyzone.description, AD.Commands.finishpolyzone.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:finishPolyzone', source)
-end, false)
+end, AD.Commands.finishpolyzone.usage)
 
-RegisterQBCoreCommand(AD.Commands.showprops.name, function(source)
+QBCore.Commands.Add(AD.Commands.showprops.name, AD.Commands.showprops.description, AD.Commands.showprops.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:showNearbyProps', source)
-end, false)
+end, AD.Commands.showprops.usage)
 
-RegisterQBCoreCommand(AD.Commands.activatelaser.name, function(source)
+QBCore.Commands.Add(AD.Commands.activatelaser.name, AD.Commands.activatelaser.description, AD.Commands.activatelaser.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:activateLaser', source)
-end, false)
+end, AD.Commands.activatelaser.usage)
 
-RegisterQBCoreCommand(AD.Commands.toggledevinfo.name, function(source)
+QBCore.Commands.Add(AD.Commands.toggledevinfo.name, AD.Commands.toggledevinfo.description, AD.Commands.toggledevinfo.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:toggleDevInfo', source)
-end, false)
+end, AD.Commands.toggledevinfo.usage)
 
-RegisterQBCoreCommand(AD.Commands.showcarinfo.name, function(source)
+QBCore.Commands.Add(AD.Commands.showcarinfo.name, AD.Commands.showcarinfo.description, AD.Commands.showcarinfo.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:showCarInfo', source)
-end, false)
+end, AD.Commands.showcarinfo.usage)
 
-RegisterQBCoreCommand(AD.Commands.repairvehicle.name, function(source)
+QBCore.Commands.Add(AD.Commands.repairvehicle.name, AD.Commands.repairvehicle.description, AD.Commands.repairvehicle.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:repairAndRefuelVehicle', source)
-end, false)
+end, AD.Commands.repairvehicle.usage)
 
-RegisterQBCoreCommand(AD.Commands.applyeffect.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.applyeffect.name, AD.Commands.applyeffect.description, AD.Commands.applyeffect.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     local identifier = args[2]:lower()
     local effect = nil
@@ -281,7 +251,7 @@ RegisterQBCoreCommand(AD.Commands.applyeffect.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /effecta [player_id] [effect name or number]', 'error')
     end
-end, false)
+end, AD.Commands.applyeffect.usage)
 
 function IsEffectAvailable(effect)
     for _, v in ipairs(effects) do
@@ -290,39 +260,39 @@ function IsEffectAvailable(effect)
     return false
 end
 
-RegisterQBCoreCommand(AD.Commands.livery.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.livery.name, AD.Commands.livery.description, AD.Commands.livery.parameters, false, function(source, args)
     local liveryIndex = tonumber(args[1])
     if liveryIndex then
         TriggerClientEvent('atiya-dev:applyLivery', source, liveryIndex)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /liva [livery number]', 'error')
     end
-end, false)
+end, AD.Commands.livery.usage)
 
-RegisterQBCoreCommand(AD.Commands.vehiclespeed.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.vehiclespeed.name, AD.Commands.vehiclespeed.description, AD.Commands.vehiclespeed.parameters, false, function(source, args)
     local multiplier = tonumber(args[1])
     if multiplier and multiplier >= 0.1 and multiplier <= 100.0 then
         TriggerClientEvent('atiya-dev:adjustVehicleSpeed', source, multiplier)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /vspeeda [0.1-100]', 'error')
     end
-end, false)
+end, AD.Commands.vehiclespeed.usage)
 
-RegisterQBCoreCommand(AD.Commands.pedspeed.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.pedspeed.name, AD.Commands.pedspeed.description, AD.Commands.pedspeed.parameters, false, function(source, args)
     local multiplier = tonumber(args[1])
     if multiplier and multiplier >= 0.1 and multiplier <= 100.0 then
         TriggerClientEvent('atiya-dev:adjustPedSpeed', source, multiplier)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /pspeeda [0.1-100]', 'error')
     end
-end, false)
+end, AD.Commands.pedspeed.usage)
 
-RegisterQBCoreCommand(AD.Commands.spawnped.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.spawnped.name, AD.Commands.spawnped.description, AD.Commands.spawnped.parameters, false, function(source, args)
     local pedHash = args[1]
     TriggerClientEvent('atiya-dev:spawnPed', source, pedHash, nil)
-end, false)
+end, AD.Commands.spawnped.usage)
 
-RegisterQBCoreCommand(AD.Commands.spawnpedcoords.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.spawnpedcoords.name, AD.Commands.spawnpedcoords.description, AD.Commands.spawnpedcoords.parameters, false, function(source, args)
     local pedHash = args[1]
     local coords = {tonumber(args[2]), tonumber(args[3]), tonumber(args[4]), tonumber(args[5])}
     if #coords == 4 then
@@ -330,9 +300,9 @@ RegisterQBCoreCommand(AD.Commands.spawnpedcoords.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /pspawnca [ped name/hash] [x] [y] [z] [heading]', 'error')
     end
-end, false)
+end, AD.Commands.spawnpedcoords.usage)
 
-RegisterQBCoreCommand(AD.Commands.toggleped.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.toggleped.name, AD.Commands.toggleped.description, AD.Commands.toggleped.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1])
     local pedHash = args[2]
     if targetPlayerId and pedHash then
@@ -340,22 +310,22 @@ RegisterQBCoreCommand(AD.Commands.toggleped.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /iama [player id] [ped name/hash]', 'error')
     end
-end, false)
+end, AD.Commands.toggleped.usage)
 
-RegisterQBCoreCommand(AD.Commands.clearnearbypeds.name, function(source)
+QBCore.Commands.Add(AD.Commands.clearnearbypeds.name, AD.Commands.clearnearbypeds.description, AD.Commands.clearnearbypeds.parameters, false, function(source)
     TriggerClientEvent('atiya-dev:clearNearbyPeds', source)
-end, false)
+end, AD.Commands.clearnearbypeds.usage)
 
-RegisterQBCoreCommand(AD.Commands.clearpedsradius.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.clearpedsradius.name, AD.Commands.clearpedsradius.description, AD.Commands.clearpedsradius.parameters, false, function(source, args)
     local radius = tonumber(args[1])
     if radius and radius > 0 then
         TriggerClientEvent('atiya-dev:clearPedsRadius', source, radius)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Usage: /pclearra [radius]', 'error')
     end
-end, false)
+end, AD.Commands.clearpedsradius.usage)
 
-RegisterQBCoreCommand(AD.Commands.settime.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.settime.name, AD.Commands.settime.description, AD.Commands.settime.parameters, false, function(source, args, rawCommand)
     local src = source
     local hour = tonumber(args[1])
     local minute = tonumber(args[2])
@@ -365,9 +335,9 @@ RegisterQBCoreCommand(AD.Commands.settime.name, function(source, args, rawComman
     else
         TriggerClientEvent("QBCore:Notify", src, "Invalid time format. Use /time [hours 0-23] [minutes 0-59]", "error")
     end
-end, false)
+end, AD.Commands.settime.usage)
 
-RegisterQBCoreCommand(AD.Commands.setweather.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.setweather.name, AD.Commands.setweather.description, AD.Commands.setweather.parameters, false, function(source, args, rawCommand)
     local src = source
     local weatherType = tostring(args[1])
     if weatherType then
@@ -376,9 +346,9 @@ RegisterQBCoreCommand(AD.Commands.setweather.name, function(source, args, rawCom
     else
         TriggerClientEvent("QBCore:Notify", src, "Invalid weather type.", "error")
     end
-end, false)
+end, AD.Commands.setweather.usage)
 
-RegisterQBCoreCommand(AD.Commands.sethealth.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.sethealth.name, AD.Commands.sethealth.description, AD.Commands.sethealth.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1]) 
     local healthAmount = tonumber(args[2])
     if not targetPlayerId then
@@ -393,9 +363,9 @@ RegisterQBCoreCommand(AD.Commands.sethealth.name, function(source, args)
 
     TriggerClientEvent('atiya-dev:setHealth', targetPlayerId, healthAmount) 
     TriggerClientEvent('QBCore:Notify', source, "Health set for player " .. targetPlayerId, 'success')
-end, false) 
+end, AD.Commands.sethealth.usage) 
 
-RegisterQBCoreCommand(AD.Commands.setarmor.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.setarmor.name, AD.Commands.setarmor.description, AD.Commands.setarmor.parameters, false, function(source, args)
     local targetPlayerId = tonumber(args[1]) 
     local armorAmount = tonumber(args[2])
     if not targetPlayerId then
@@ -408,9 +378,9 @@ RegisterQBCoreCommand(AD.Commands.setarmor.name, function(source, args)
     end
     TriggerClientEvent('atiya-dev:setArmor', targetPlayerId, armorAmount) 
     TriggerClientEvent('QBCore:Notify', source, "Armor set for player " .. targetPlayerId, 'success')
-end, false)
+end, AD.Commands.setarmor.usage)
 
-RegisterQBCoreCommand(AD.Commands.handcuff.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.handcuff.name, AD.Commands.handcuff.description, AD.Commands.handcuff.parameters, false, function(source, args, rawCommand)
     local src = source
     local targetId = tonumber(args[1])
     if targetId then
@@ -418,22 +388,22 @@ RegisterQBCoreCommand(AD.Commands.handcuff.name, function(source, args, rawComma
     else
         TriggerClientEvent('QBCore:Notify', source, 'No player ID specified', 'error')
     end
-end, false)
+end, AD.Commands.handcuff.usage)
 
 
-RegisterQBCoreCommand(AD.Commands.showpeds.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.showpeds.name, AD.Commands.showpeds.description, AD.Commands.showpeds.parameters, false, function(source, args, rawCommand)
     TriggerClientEvent('atiya-dev:showNearbyPeds', source)
-end, false)
+end, AD.Commands.showpeds.usage)
 
-RegisterQBCoreCommand(AD.Commands.startobjectplace.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.startobjectplace.name, AD.Commands.startobjectplace.description, AD.Commands.startobjectplace.parameters, false, function(source, args, rawCommand)
     if #args < 1 then
         TriggerClientEvent('QBCore:Notify', source, 'Invalid object name or hash', 'error')
         return
     end
     TriggerClientEvent('atiya-dev:startObjectPlacement', source, args[1])
-end, false)
+end, AD.Commands.startobjectplace.usage)
 
-RegisterQBCoreCommand(AD.Commands.sethunger.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.sethunger.name, AD.Commands.sethunger.description, AD.Commands.sethunger.parameters, false, function(source, args, rawCommand)
     local player = QBCore.Functions.GetPlayer(source)
     local hungerLevel = tonumber(args[1])
     if hungerLevel and hungerLevel >= 0 and hungerLevel <= 100 then
@@ -442,9 +412,9 @@ RegisterQBCoreCommand(AD.Commands.sethunger.name, function(source, args, rawComm
     else
         TriggerClientEvent('QBCore:Notify', source, 'Enter a value between 0 and 100.', 'error')
     end
-end, false)
+end, AD.Commands.sethunger.usage)
 
-RegisterQBCoreCommand(AD.Commands.setthirst.name, function(source, args, rawCommand)
+QBCore.Commands.Add(AD.Commands.setthirst.name, AD.Commands.setthirst.description, AD.Commands.setthirst.parameters, false, function(source, args, rawCommand)
     local player = QBCore.Functions.GetPlayer(source)
     local thirstLevel = tonumber(args[1])
     if thirstLevel and thirstLevel >= 0 and thirstLevel <= 100 then
@@ -453,9 +423,9 @@ RegisterQBCoreCommand(AD.Commands.setthirst.name, function(source, args, rawComm
     else
         TriggerClientEvent('QBCore:Notify', source, 'Enter a value between 0 and 100.', 'error')
     end
-end, false)
+end, AD.Commands.setthirst.usage)
 
-RegisterQBCoreCommand(AD.Commands.giveitema.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.giveitema.name, AD.Commands.giveitema.description, AD.Commands.giveitema.parameters, false, function(source, args)
     local playerid = tonumber(args[1])
     local item = args[2]
     local amount = tonumber(args[3]) or 1
@@ -466,9 +436,9 @@ RegisterQBCoreCommand(AD.Commands.giveitema.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
     end
-end, false)
+end, AD.Commands.giveitema.usage)
 
-RegisterQBCoreCommand(AD.Commands.setjoba.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.setjoba.name, AD.Commands.setjoba.description, AD.Commands.setjoba.parameters, false, function(source, args)
     local playerid = tonumber(args[1])
     local job = args[2]
     local grade = tonumber(args[3]) or 0
@@ -479,9 +449,9 @@ RegisterQBCoreCommand(AD.Commands.setjoba.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
     end
-end, false)
+end, AD.Commands.setjoba.usage)
 
-RegisterQBCoreCommand(AD.Commands.tpto.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.tpto.name, AD.Commands.tpto.description, AD.Commands.tpto.parameters, false, function(source, args)
     local playerid = tonumber(args[1])
     local x = tonumber(args[2])
     local y = tonumber(args[3])
@@ -499,9 +469,9 @@ RegisterQBCoreCommand(AD.Commands.tpto.name, function(source, args)
             TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
         end
     end
-end, false)
+end, AD.Commands.tpto.usage)
 
-RegisterQBCoreCommand(AD.Commands.tptop.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.tptop.name, AD.Commands.tptop.description, AD.Commands.tptop.parameters, false, function(source, args)
     local playerid = tonumber(args[1])
     local otherplayerid = tonumber(args[2])
     local targetPlayer = QBCore.Functions.GetPlayer(otherplayerid)
@@ -512,9 +482,9 @@ RegisterQBCoreCommand(AD.Commands.tptop.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
     end
-end, false)
+end, AD.Commands.tptop.usage)
 
-RegisterQBCoreCommand(AD.Commands.bringa.name, function(source, args)
+QBCore.Commands.Add(AD.Commands.bringa.name, AD.Commands.bringa.description, AD.Commands.bringa.parameters, false, function(source, args)
     local playerid = tonumber(args[1])
     local otherplayerid = tonumber(args[2])
     local targetPlayer = QBCore.Functions.GetPlayer(otherplayerid)
@@ -525,4 +495,40 @@ RegisterQBCoreCommand(AD.Commands.bringa.name, function(source, args)
     else
         TriggerClientEvent('QBCore:Notify', source, 'Player not found.', 'error')
     end
-end, false)
+end, AD.Commands.bringa.usage)
+
+QBCore.Commands.Add(AD.Commands.noclip.name, AD.Commands.noclip.description, AD.Commands.noclip.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:noclip', source)
+end, AD.Commands.noclip.usage)
+
+QBCore.Commands.Add(AD.Commands.addAttachments.name, AD.Commands.addAttachments.description, AD.Commands.addAttachments.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:addAttachments', source)
+end, AD.Commands.addAttachments.usage)
+
+QBCore.Commands.Add(AD.Commands.resetped.name, AD.Commands.resetped.description, AD.Commands.resetped.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:resetped', source)
+end, AD.Commands.resetped.usage)
+
+QBCore.Commands.Add(AD.Commands.die.name, AD.Commands.die.description, AD.Commands.die.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:die', source)
+end, AD.Commands.die.usage)
+
+QBCore.Commands.Add(AD.Commands.deleteliveobj.name, AD.Commands.deleteliveobj.description, AD.Commands.deleteliveobj.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:deleteliveobj', source)
+end, AD.Commands.deleteliveobj.usage)
+
+QBCore.Commands.Add(AD.Commands.deleteliveped.name, AD.Commands.deleteliveped.description, AD.Commands.deleteliveped.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:deleteliveped', source)
+end, AD.Commands.deleteliveped.usage)
+
+QBCore.Commands.Add(AD.Commands.liveped.name, AD.Commands.liveped.description, AD.Commands.liveped.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:liveped', source, args)
+end, AD.Commands.liveped.usage)
+
+QBCore.Commands.Add(AD.Commands.tptom.name, AD.Commands.tptom.description, AD.Commands.tptom.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:tptom', source)
+end, AD.Commands.tptom.usage)
+
+QBCore.Commands.Add(AD.Commands.liveobjedit.name, AD.Commands.liveobjedit.description, AD.Commands.liveobjedit.parameters, false, function(source, args)
+    TriggerClientEvent('atiya-dev:liveobjedit', source, args)
+end, AD.Commands.liveobjedit.usage)
