@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'Atiya'
-description 'Atiya DevTools'
+description 'Atiya Dev'
 version '0.0.1'
 
 client_scripts {
@@ -17,12 +17,14 @@ server_scripts {
 shared_scripts {
     'shared/*.lua',
     'shared/db/*.lua',
+    'shared/config/config_commands.lua',
+    'shared/config/config.lua',
     'shared/config/*.lua',
 }
 
 files {
-    'html/index.html',
-    'html/js/script.js'
+    'html/*.html',
+    'html/js/*.js'
 }
 
 ui_page 'html/index.html'
