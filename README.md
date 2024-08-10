@@ -25,7 +25,7 @@
   
 ![image](https://i.imgur.com/KnPIwCU.png)
 
- * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
+ * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.
 
 
 ![image](https://i.imgur.com/mTn1eyf.png)
@@ -36,7 +36,9 @@
 * **Feature**: Attaching a prop to a specified **bone**, controlling it's location, allowing you to copy the coordinates set.
 
 ![image](https://i.imgur.com/MvvNcyB.png)
-  
+  * **Feature**: Setting up **polyzone** markers.
+
+![image](https://i.imgur.com/e7WCFng.png)
 # Features
 * Setting up **polyzone** markers.
 * Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
