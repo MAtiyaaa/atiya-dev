@@ -174,6 +174,13 @@ AD.Commands = {
         description = "Start placing a live marker.",
         parameters = {}
     },
+    showpeds = {
+        enabled = true,
+        name = "showpeds",
+        usage = "/showpeds",
+        description = "Show all peds around you in a 3D box.",
+        parameters = {}
+    },
     togglecoords = {
         enabled = true,
         name = "togglecoords",
