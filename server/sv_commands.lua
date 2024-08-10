@@ -90,7 +90,7 @@ if AD.Commands.jail.enabled == true then
             exports[ADC.Config.Jail]:jailPlayer(playerId, true, time)
             TriggerClientEvent('QBCore:Notify', source, ('Player %s jailed for %d minutes'):format(playerId, time), 'success')
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /jaila [playerId] [time]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [playerId] [time]', 'error')
         end
     end, AD.Commands.jail.usage)
 end
@@ -102,7 +102,7 @@ if AD.Commands.unjail.enabled == true then
             exports[ADC.Config.Jail]:unJailPlayer(playerId)
             TriggerClientEvent('QBCore:Notify', source, ('Player %s has been released'):format(playerId), 'success')
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /unjaila [playerId]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [playerId]', 'error')
         end
     end, AD.Commands.unjail.usage)
 end
@@ -121,7 +121,7 @@ if AD.Commands.invisibility.enabled == true then
             TriggerClientEvent('atiya-dev:setInvisibility', targetPlayerId)
             TriggerClientEvent('QBCore:Notify', source, ('Toggled invisibility for player %d'):format(targetPlayerId), 'success')
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /inva [player ID]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player ID]', 'error')
         end
     end, AD.Commands.invisibility.usage)
 end
@@ -132,7 +132,7 @@ if AD.Commands.ammo.enabled == true then
         if targetPlayerId then
             TriggerClientEvent('atiya-dev:setInfiniteAmmo', targetPlayerId)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /ammoa [player ID]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player ID]', 'error')
         end
     end, AD.Commands.ammo.usage)
 end
@@ -144,7 +144,7 @@ if AD.Commands.freeze.enabled == true then
             TriggerClientEvent('atiya-dev:freezePlayer', targetPlayerId, true)
             TriggerClientEvent('QBCore:Notify', source, ('Player %d is now frozen'):format(targetPlayerId), 'success')
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /freezea [player ID]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player ID]', 'error')
         end
     end, AD.Commands.freeze.usage)
 end
@@ -156,7 +156,7 @@ if AD.Commands.unfreeze.enabled == true then
             TriggerClientEvent('atiya-dev:freezePlayer', targetPlayerId, false)
             TriggerClientEvent('QBCore:Notify', source, ('Player %d is now unfrozen'):format(targetPlayerId), 'success')
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /unfreezea [player ID]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player ID]', 'error')
         end
     end, AD.Commands.unfreeze.usage)
 end
@@ -167,7 +167,7 @@ if AD.Commands.spawnobject.enabled == true then
         if objectName then
             TriggerClientEvent('atiya-dev:spawnObject', source, objectName)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /obja [object name]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [object name]', 'error')
         end
     end, AD.Commands.spawnobject.usage)
 end
@@ -178,7 +178,7 @@ if AD.Commands.deleteobject.enabled == true then
         if objectName then
             TriggerClientEvent('atiya-dev:deleteNearbyObject', source, objectName)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /objda [object name]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [object name]', 'error')
         end
     end, AD.Commands.deleteobject.usage)
 end
@@ -189,7 +189,7 @@ if AD.Commands.deleteobjectsinradius.enabled == true then
         if radius then
             TriggerClientEvent('atiya-dev:deleteObjectsInRadius', source, radius)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /objdra [radius]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [radius]', 'error')
         end
     end, AD.Commands.deleteobjectsinradius.usage)
 end
@@ -206,7 +206,7 @@ if AD.Commands.delvehicleinradius.enabled == true then
         if radius then
             TriggerClientEvent('atiya-dev:deleteVehiclesInRadius', source, radius)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /dvra [radius]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [radius]', 'error')
         end
     end, AD.Commands.delvehicleinradius.usage)
 end
@@ -232,7 +232,7 @@ if AD.Commands.setstress.enabled == true then
             if desiredStress > 100 then desiredStress = 100 end
             TriggerEvent('hud:server:SetPlayerStress', targetPlayerId, desiredStress)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /stressa [player_id] [stress level]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player_id] [stress level]', 'error')
         end
     end, AD.Commands.setstress.usage)
 end
@@ -242,7 +242,7 @@ if AD.Commands.getidentifier.enabled == true then
         local targetPlayerId = tonumber(args[1])
         local identifierType = tostring(args[2]):lower()
         if not targetPlayerId or not identifierType then
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /identa [player_id] [steam/rockstar/discord/fivem]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player_id] [steam/rockstar/discord/fivem]', 'error')
             return
         end
         TriggerEvent('atiya-dev:retrieveIdentifier', source, targetPlayerId, identifierType)
@@ -252,19 +252,12 @@ end
 if AD.Commands.polya.enabled == true then
     QBCore.Commands.Add(AD.Commands.polya.name, AD.Commands.polya.description, AD.Commands.polya.parameters, false, function(source, args)
         local action = args[1] and args[1]:lower()
-
         if action == "start" then
             TriggerClientEvent('atiya-dev:startPolyzone', source)
-            TriggerClientEvent('QBCore:Notify', source, "Started polyzone.", "success")
-
         elseif action == "add" then
             TriggerClientEvent('atiya-dev:addPolyzonePoint', source)
-            TriggerClientEvent('QBCore:Notify', source, "Added point to polyzone.", "success")
-
         elseif action == "finish" then
             TriggerClientEvent('atiya-dev:finishPolyzone', source)
-            TriggerClientEvent('QBCore:Notify', source, "Finished and saved polyzone.", "success")
-
         else
             TriggerClientEvent('QBCore:Notify', source, "Invalid action. Use 'start', 'add', or 'finish'.", "error")
         end
@@ -315,7 +308,7 @@ if AD.Commands.applyeffect.enabled == true then
         if targetPlayerId and effect and IsEffectAvailable(effect) then
             TriggerClientEvent('atiya-dev:applyScreenEffect', targetPlayerId, effect)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /effecta [player_id] [effect name or number]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player_id] [effect name or number]', 'error')
         end
     end, AD.Commands.applyeffect.usage)
 end
@@ -333,7 +326,7 @@ if AD.Commands.livery.enabled == true then
         if liveryIndex then
             TriggerClientEvent('atiya-dev:applyLivery', source, liveryIndex)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /liva [livery number]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [livery number]', 'error')
         end
     end, AD.Commands.livery.usage)
 end
@@ -344,7 +337,7 @@ if AD.Commands.vehiclespeed.enabled == true then
         if multiplier and multiplier >= 0.1 and multiplier <= 100.0 then
             TriggerClientEvent('atiya-dev:adjustVehicleSpeed', source, multiplier)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /vspeeda [0.1-100]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [0.1-100]', 'error')
         end
     end, AD.Commands.vehiclespeed.usage)
 end
@@ -355,7 +348,7 @@ if AD.Commands.pedspeed.enabled == true then
         if multiplier and multiplier >= 0.1 and multiplier <= 100.0 then
             TriggerClientEvent('atiya-dev:adjustPedSpeed', source, multiplier)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /pspeeda [0.1-100]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [0.1-100]', 'error')
         end
     end, AD.Commands.pedspeed.usage)
 end
@@ -374,7 +367,7 @@ if AD.Commands.spawnpedcoords.enabled == true then
         if #coords == 4 then
             TriggerClientEvent('atiya-dev:spawnPed', source, pedHash, coords)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /pspawnca [ped name/hash] [x] [y] [z] [heading]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [ped name/hash] [x] [y] [z] [heading]', 'error')
         end
     end, AD.Commands.spawnpedcoords.usage)
 end
@@ -386,7 +379,7 @@ if AD.Commands.toggleped.enabled == true then
         if targetPlayerId and pedHash then
             TriggerClientEvent('atiya-dev:togglePed', targetPlayerId, pedHash)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /iama [player id] [ped name/hash]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player id] [ped name/hash]', 'error')
         end
     end, AD.Commands.toggleped.usage)
 end
@@ -403,7 +396,7 @@ if AD.Commands.clearpedsradius.enabled == true then
         if radius and radius > 0 then
             TriggerClientEvent('atiya-dev:clearPedsRadius', source, radius)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /pclearra [radius]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [radius]', 'error')
         end
     end, AD.Commands.clearpedsradius.usage)
 end
@@ -417,7 +410,7 @@ if AD.Commands.settime.enabled == true then
             TriggerEvent('qb-weathersync:server:setTime', hour, minute)
             TriggerClientEvent("QBCore:Notify", src, "Time set to " .. hour .. ":" .. minute, "success")
         else
-            TriggerClientEvent("QBCore:Notify", src, "Invalid time format. Use /time [hours 0-23] [minutes 0-59]", "error")
+            TriggerClientEvent("QBCore:Notify", src, "Invalid time format. Use [hours 0-23] [minutes 0-59]", "error")
         end
     end, AD.Commands.settime.usage)
 end
@@ -440,7 +433,7 @@ if AD.Commands.sethealth.enabled == true then
         local targetPlayerId = tonumber(args[1]) 
         local healthAmount = tonumber(args[2])
         if not targetPlayerId then
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /sethealth [player ID] [health amount]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player ID] [health amount]', 'error')
             return
         end
 
@@ -459,7 +452,7 @@ if AD.Commands.setarmor.enabled == true then
         local targetPlayerId = tonumber(args[1]) 
         local armorAmount = tonumber(args[2])
         if not targetPlayerId then
-            TriggerClientEvent('QBCore:Notify', source, 'Usage: /setarmor [player ID] [armor amount]', 'error')
+            TriggerClientEvent('QBCore:Notify', source, 'Usage: [player ID] [armor amount]', 'error')
             return
         end
         if not armorAmount or armorAmount < 0 or armorAmount > 100 then 
