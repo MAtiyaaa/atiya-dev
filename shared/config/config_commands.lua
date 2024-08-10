@@ -110,7 +110,7 @@ AD.Commands = {
         enabled = true,
         name = "freezea",
         usage = "/freezea [player ID]",
-        description = "Freeze a player in place.",
+        description = "Freeze a player.",
         parameters = {
             {name = "playerId", help = "ID of the player"}
         }
@@ -137,7 +137,7 @@ AD.Commands = {
         enabled = true,
         name = "objda",
         usage = "/objda [object name]",
-        description = "Delete a nearby object.",
+        description = "Delete a specific nearby object.",
         parameters = {
             {name = "objectName", help = "Name of the object"}
         }
@@ -208,32 +208,20 @@ AD.Commands = {
             {name = "identifierType", help = "Identifier type (steam, rockstar, discord, fivem)"}
         }
     },
-    startpolyzone = {
+    polya = {
         enabled = true,
-        name = "startpolyzone",
-        usage = "/startpolyzone",
-        description = "Start defining a polygonal zone.",
-        parameters = {}
-    },
-    addpolyzonepoint = {
-        enabled = true,
-        name = "addpolyzonepoint",
-        usage = "/addpolyzonepoint",
-        description = "Add a point to the current polygonal zone.",
-        parameters = {}
-    },
-    finishpolyzone = {
-        enabled = true,
-        name = "finishpolyzone",
-        usage = "/finishpolyzone",
-        description = "Finish and save the current polygonal zone.",
-        parameters = {}
+        name = "polya",
+        usage = "/polya [start/add/finish]",
+        description = "Manage polyzones (start, add points, or finish).",
+        parameters = {
+            { name = "action", help = "'start', 'add', or 'finish'." }
+        }
     },
     showprops = {
         enabled = true,
         name = "showprops",
         usage = "/showprops",
-        description = "Show nearby props.",
+        description = "Show nearby props in a 3D box",
         parameters = {}
     },
     activatelaser = {
@@ -271,7 +259,7 @@ AD.Commands = {
         description = "Apply a screen effect to a player.",
         parameters = {
             {name = "playerId", help = "ID of the player"},
-            {name = "effect", help = "Effect name or number"}
+            {name = "effect", help = "Effect name or number (1-70)"}
         }
     },
     livery = {
