@@ -1,9 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>copy</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div id="menu" class="menu">
+        <div class="menu-header">
+            <h2 class="menu-title">Dev Menu</h2>
+            <div class="menu-controls">
+                <div class="menu-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                <div class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-sun"></i></div>
+                <div class="menu-close"><i class="fas fa-times"></i></div>
+            </div>
+        </div>
+        <div class="category-bar">
+            <div class="category-icon" data-category="all" onclick="filterCategory('all')"><i class="fas fa-globe"></i></div>
+            <div class="category-icon" data-category="car" onclick="filterCategory('car')"><i class="fas fa-car"></i></div>
+            <div class="category-icon" data-category="object" onclick="filterCategory('object')"><i class="fas fa-cube"></i></div>
+            <div class="category-icon" data-category="player" onclick="filterCategory('player')"><i class="fas fa-user"></i></div>
+            <div class="category-icon" data-category="world" onclick="filterCategory('world')"><i class="fas fa-globe-americas"></i></div>
+            <div class="category-icon" data-category="favorites" onclick="filterCategory('favorites')"><i class="fas fa-star"></i></div>
+        </div>
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search commands...">
+        <div id="commandList"></div>
+            <!-- Commands -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
