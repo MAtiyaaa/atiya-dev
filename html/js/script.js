@@ -43,7 +43,7 @@ function renderMenu(filteredCommands = commands) {
                 </span>
             </h3>
             <p>${cmd.description}</p>
-            <p><strong>Usage:</strong> ${cmd.usage}</p>
+            <p><strong>Command:</strong> ${cmd.usage}</p>
             ${cmd.parameters.length > 0 ? 
                 cmd.parameters.map(param => `
                     <input type="text" id="params-${cmd.name}-${param.name}" placeholder="${param.help}">
