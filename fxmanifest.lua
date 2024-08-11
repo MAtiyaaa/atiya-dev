@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'Atiya'
-description 'Atiya Dev'
-version '0.0.1'
+description 'Atiya Developer Tools'
+version '1.0.0'
 
 client_scripts {
     'client/*.lua',
@@ -24,7 +24,8 @@ shared_scripts {
 
 files {
     'html/*.html',
-    'html/js/*.js'
+    'html/js/*.js',
+    'html/css/*.css',
 }
 
 ui_page 'html/index.html'
