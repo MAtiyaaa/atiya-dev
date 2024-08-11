@@ -25,7 +25,7 @@
   
 ![image](https://i.imgur.com/KnPIwCU.png)
 
- * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.
+ * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
 
 
 ![image](https://i.imgur.com/mTn1eyf.png)
@@ -54,6 +54,11 @@
 * **Admin** features you would expect (*noclip, teleporting, god mode, unlimited ammo, setting jobs, giving items, etc.*)
 * Manually **modifiying** your character's *health, stress, armor, hunger and thirst.*
 * Copies most of the information received to your **clipboard**.
+
+# Installation
+
+* Add `ALTER TABLE players ADD COLUMN favorites TEXT;` to your SQL
+
 # Future Versions
 
 *  Menu instead of commands (*or having the option of either or both*)
