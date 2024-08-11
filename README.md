@@ -20,12 +20,13 @@
   
 
 # Preview
-
-  * **Feature**: Live **3D** view of all objects and/or peds around you, highlighted with their information placed under it.
+* **Feature**: Developer **menu** with all options available as an alternative to using commands.
+  
+![image](https://i.imgur.com/iXvwSdn.png)
+* **Feature**: Live **3D** view of all objects and/or peds around you, highlighted with their information placed under it.
   
 ![image](https://i.imgur.com/KnPIwCU.png)
-
- * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
+* **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
 
 
 ![image](https://i.imgur.com/mTn1eyf.png)
@@ -36,10 +37,11 @@
 * **Feature**: Attaching a prop to a specified **bone**, controlling it's location, allowing you to copy the coordinates set.
 
 ![image](https://i.imgur.com/MvvNcyB.png)
-  * **Feature**: Setting up **polyzone** markers.
+* **Feature**: Setting up **polyzone** markers.
 
 ![image](https://i.imgur.com/e7WCFng.png)
 # Features
+* Developer **menu** with all options available as an alternative to using commands.
 * Setting up **polyzone** markers.
 * Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
 * Moving around a **ped or object** live and saving their coordinates.
@@ -58,10 +60,6 @@
 # Installation
 
 * Add `ALTER TABLE players ADD COLUMN favorites TEXT;` to your SQL
-
-# Future Versions
-
-*  Menu instead of commands (*or having the option of either or both*)
 
 # Dependencies
 
