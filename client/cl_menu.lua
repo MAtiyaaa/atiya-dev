@@ -17,7 +17,8 @@ for cmdName, cmdData in pairs(AD.Commands) do
         parameters = cmdData.parameters or {},
         usage = cmdData.usage,
         enabled = cmdData.enabled,
-        icon = cmdData.icon or "fas fa-terminal"
+        icon = cmdData.icon or "fas fa-terminal",
+        category = cmdData.category
     })
 end
 
