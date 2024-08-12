@@ -22,7 +22,7 @@
 # Preview
 * **Feature**: Developer **menu** with all options available as an alternative to using commands.
   
-![image](https://i.imgur.com/iXvwSdn.png)
+![image](https://i.imgur.com/oygwv4l.png)
 * **Feature**: Live **3D** view of all objects and/or peds around you, highlighted with their information placed under it.
   
 ![image](https://i.imgur.com/KnPIwCU.png)
@@ -59,7 +59,7 @@
 
 # Installation
 
-* Run `atiya-dev.sql` from your `[INSTALL]` in your SQL.
+* Add `ALTER TABLE players ADD COLUMN favorites TEXT;` to your SQL
 
 # Dependencies
 
