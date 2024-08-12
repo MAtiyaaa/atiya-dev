@@ -44,7 +44,6 @@ function OpenMenu()
         optionLists = AD.OptionLists
     })
     SetNuiFocus(true, true)
-    SetNuiFocusKeepInput(false)
 end
 
 function CloseMenu()
@@ -52,7 +51,6 @@ function CloseMenu()
         Menu.isOpen = false
         SendNUIMessage({action = "closeMenu"})
         SetNuiFocus(false, false)
-        SetNuiFocusKeepInput(false)
     end
 end
 
@@ -102,16 +100,6 @@ end)
 
 RegisterNUICallback('closeMenu', function(data, cb)
     CloseMenu()
-    cb('ok')
-end)
-
-RegisterNUICallback('focusOn', function(data, cb)
-    SetNuiFocusKeepInput(false)
-    cb('ok')
-end)
-
-RegisterNUICallback('focusOff', function(data, cb)
-    SetNuiFocusKeepInput(true)
     cb('ok')
 end)
 
