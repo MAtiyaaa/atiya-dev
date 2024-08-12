@@ -13,9 +13,9 @@
         <div class="menu-header">
             <h2 class="menu-title">Developer Menu</h2>
             <div class="menu-controls">
-                <div class="menu-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                <div class="menu-drag-handle"><i class="fas fa-up-down-left-right"></i></div>
                 <div class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-sun"></i></div>
-                <div class="menu-close"><i class="fas fa-times"></i></div>
+                <div class="menu-close"><i class="fas fa-circle-xmark"></i></div>
             </div>
         </div>
         <div class="category-bar">
@@ -27,8 +27,8 @@
             <div class="category-icon" data-category="favorites" onclick="filterCategory('favorites')"><i class="fas fa-star"></i></div>
         </div>
         <input type="text" id="searchBar" class="search-bar" placeholder="Search commands...">
-        <div id="commandList"></div>
-            <!-- Commands -->
+        <div class="menu-content">
+            <div id="commandList"></div>
         </div>
     </div>
 
