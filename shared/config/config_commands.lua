@@ -2,7 +2,7 @@ AD = {}
 AD.Commands = {
     isadmin = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Admin Check",
         name = "isadmin",
         usage = "/isadmin",
@@ -12,7 +12,7 @@ AD.Commands = {
     },
     jobname = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Job Name",
         name = "jobname",
         usage = "/jobname",
@@ -22,7 +22,7 @@ AD.Commands = {
     },
     jobtype = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Job Type",
         name = "jobtype",
         usage = "/jobtype",
@@ -32,7 +32,7 @@ AD.Commands = {
     },
     who = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Player Info",
         name = "who",
         usage = "/who [player ID]",
@@ -44,7 +44,7 @@ AD.Commands = {
     },
     coords3 = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Copy coords3",
         name = "coords3",
         usage = "/coords3",
@@ -54,7 +54,7 @@ AD.Commands = {
     },
     coords4 = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Copy coords4",
         name = "coords4",
         usage = "/coords4",
@@ -64,7 +64,7 @@ AD.Commands = {
     },
     iteminfo = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Item Info",
         name = "iteminfo",
         usage = "/iteminfo [item name]",
@@ -76,7 +76,7 @@ AD.Commands = {
     },
     jail = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Jail Player",
         name = "jaila",
         usage = "/jaila [player ID] [time]",
@@ -89,7 +89,7 @@ AD.Commands = {
     },
     unjail = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "UnJail Player",
         name = "unjaila",
         usage = "/unjaila [player ID]",
@@ -101,7 +101,7 @@ AD.Commands = {
     },
     god = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "God Mode",
         name = "god",
         usage = "/god",
@@ -111,7 +111,7 @@ AD.Commands = {
     },
     invisibility = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Invisibility",
         name = "inva",
         usage = "/inva [player ID]",
@@ -123,7 +123,7 @@ AD.Commands = {
     },
     liveped = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Ped Placement",
         name = "liveped",
         usage = "/liveped [ped name/hash]",
@@ -135,7 +135,7 @@ AD.Commands = {
     },    
     ammo = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Infinite Ammo",
         name = "ammoa",
         usage = "/ammoa [player ID]",
@@ -147,7 +147,7 @@ AD.Commands = {
     },
     freeze = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Freeze Player",
         name = "freezea",
         usage = "/freezea [player ID]",
@@ -159,7 +159,7 @@ AD.Commands = {
     },
     unfreeze = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "UnFreeze Player",
         name = "unfreezea",
         usage = "/unfreezea [player ID]",
@@ -171,7 +171,7 @@ AD.Commands = {
     },
     spawnobject = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Spawn Object",
         name = "obja",
         usage = "/obja [object name]",
@@ -183,7 +183,7 @@ AD.Commands = {
     },
     deleteobject = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Delete Object",
         name = "objda",
         usage = "/objda [object name]",
@@ -195,7 +195,7 @@ AD.Commands = {
     },
     deleteobjectsinradius = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Delete Objects in Radius",
         name = "objdra",
         usage = "/objdra [radius]",
@@ -207,7 +207,7 @@ AD.Commands = {
     },
     delvehicle = {
         enabled = true,
-        category = "default",
+        category = "car",
         title = "Delete Vehicle",
         name = "delvehicle",
         usage = "/delvehicle",
@@ -217,7 +217,7 @@ AD.Commands = {
     },
     delvehicleinradius = {
         enabled = true,
-        category = "default",
+        category = "car",
         title = "Delete Vehicles in Radius",
         name = "dvra",
         usage = "/dvra [radius]",
@@ -229,7 +229,7 @@ AD.Commands = {
     },
     livemarker = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Live Marker",
         name = "livemarker",
         usage = "/livemarker",
@@ -239,7 +239,7 @@ AD.Commands = {
     },
     showpeds = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Show Nearby Peds",
         name = "showpeds",
         usage = "/showpeds",
@@ -249,7 +249,7 @@ AD.Commands = {
     },
     togglecoords = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Toggle Coordinates",
         name = "togglecoords",
         usage = "/togglecoords",
@@ -259,7 +259,7 @@ AD.Commands = {
     },
     setstress = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Player Stress",
         name = "stressa",
         usage = "/stressa [player ID] [stress level]",
@@ -272,7 +272,7 @@ AD.Commands = {
     },
     getidentifier = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Grab Identifier",
         name = "identa",
         usage = "/identa [player ID] [identifier type]",
@@ -285,7 +285,7 @@ AD.Commands = {
     },
     polya = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Polyzones",
         name = "polya",
         usage = "/polya [start/add/finish]",
@@ -297,7 +297,7 @@ AD.Commands = {
     },
     showprops = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Show Nearby Props",
         name = "showprops",
         usage = "/showprops",
@@ -307,7 +307,7 @@ AD.Commands = {
     },
     activatelaser = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Prop Laser Pointer",
         name = "activatelaser",
         usage = "/activatelaser",
@@ -317,7 +317,7 @@ AD.Commands = {
     },
     toggledevinfo = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "View Developer Information",
         name = "toggledevinfo",
         usage = "/toggledevinfo",
@@ -327,7 +327,7 @@ AD.Commands = {
     },
     showcarinfo = {
         enabled = true,
-        category = "default",
+        category = "car",
         title = "Copy Car Information",
         name = "togglecarinfo",
         usage = "/togglecarinfo",
@@ -337,7 +337,7 @@ AD.Commands = {
     },
     repairvehicle = {
         enabled = true,
-        category = "default",
+        category = "car",
         title = "Repair Vehicle",
         name = "repairvehicle",
         usage = "/repairvehicle",
@@ -347,7 +347,7 @@ AD.Commands = {
     },
     applyeffect = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Apply Effect to Player",
         name = "effecta",
         usage = "/effecta [player ID] [effect name or number]",
@@ -360,7 +360,7 @@ AD.Commands = {
     },
     livery = {
         enabled = true,
-        category = "default",
+        category = "car",
         title = "Set Livery",
         name = "liva",
         usage = "/liva [livery number]",
@@ -372,7 +372,7 @@ AD.Commands = {
     },
     vehiclespeed = {
         enabled = true,
-        category = "default",
+        category = "car",
         title = "Set Vehicle Speed",
         name = "vspeeda",
         usage = "/vspeeda [speed multiplier]",
@@ -384,7 +384,7 @@ AD.Commands = {
     },
     pedspeed = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Player Speed",
         name = "pspeeda",
         usage = "/pspeeda [speed multiplier]",
@@ -396,7 +396,7 @@ AD.Commands = {
     },
     spawnped = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Spawn Ped",
         name = "spawnped",
         usage = "/spawnped [ped name/hash]",
@@ -408,7 +408,7 @@ AD.Commands = {
     },
     spawnpedcoords = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Spawn Ped at Coordinates",
         name = "pspawnca",
         usage = "/pspawnca [ped name/hash] [x] [y] [z] [heading]",
@@ -424,7 +424,7 @@ AD.Commands = {
     },
     toggleped = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Toggle Player into Ped Model",
         name = "iama",
         usage = "/iama [player ID] [ped name/hash]",
@@ -437,7 +437,7 @@ AD.Commands = {
     },
     clearnearbypeds = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Clear Nearby Peds",
         name = "clearnearbypeds",
         usage = "/clearnearbypeds",
@@ -447,7 +447,7 @@ AD.Commands = {
     },
     clearpedsradius = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Clear Peds within Radius",
         name = "pclearra",
         usage = "/pclearra [radius]",
@@ -459,7 +459,7 @@ AD.Commands = {
     },
     settime = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Set Time",
         name = "settime",
         usage = "/settime [hours 0-23] [minutes 0-59]",
@@ -472,7 +472,7 @@ AD.Commands = {
     },
     setweather = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Set Weather",
         name = "setweather",
         usage = "/setweather [weather type]",
@@ -484,7 +484,7 @@ AD.Commands = {
     },
     sethealth = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Health",
         name = "sethealth",
         usage = "/sethealth [player ID] [health amount]",
@@ -497,7 +497,7 @@ AD.Commands = {
     },
     setarmor = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Armor",
         name = "setarmor",
         usage = "/setarmor [player ID] [armor amount]",
@@ -510,7 +510,7 @@ AD.Commands = {
     },
     setstress = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Stress",
         name = "setstress",
         usage = "/setstress [player ID] [stress level]",
@@ -523,7 +523,7 @@ AD.Commands = {
     },
     sethunger = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Hunger",
         name = "sethunger",
         usage = "/sethunger [hunger level]",
@@ -535,7 +535,7 @@ AD.Commands = {
     },
     setthirst = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Thirst",
         name = "setthirst",
         usage = "/setthirst [thirst level]",
@@ -547,7 +547,7 @@ AD.Commands = {
     },
     giveitema = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Give Item",
         name = "giveitema",
         usage = "/giveitema [player ID] [item name] [amount]",
@@ -561,7 +561,7 @@ AD.Commands = {
     },
     setjoba = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Set Job",
         name = "setjoba",
         usage = "/setjoba [player ID] [job name] [grade]",
@@ -575,7 +575,7 @@ AD.Commands = {
     },
     tpto = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Teleport to Coordinates",
         name = "tpto",
         usage = "/tpto [player ID] [x] [y] [z] [heading]",
@@ -591,7 +591,7 @@ AD.Commands = {
     },
     tptop = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Teleport to Player",
         name = "tptop",
         usage = "/tptop [player ID] [target player ID]",
@@ -604,7 +604,7 @@ AD.Commands = {
     },
     tptom = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Teleport to Waypoint",
         name = "tptom",
         usage = "/tptom",
@@ -614,7 +614,7 @@ AD.Commands = {
     },
     bringa = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Bring Player",
         name = "bringa",
         usage = "/bringa [player ID] [target player ID]",
@@ -627,7 +627,7 @@ AD.Commands = {
     },
     noclip = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Noclip",
         name = "noclipa",
         usage = "/noclipa",
@@ -637,7 +637,7 @@ AD.Commands = {
     },
     startobjectplace = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Prop Placement",
         name = "liveobj",
         usage = "/liveobj [object name]",
@@ -649,7 +649,7 @@ AD.Commands = {
     },
     liveobjedit = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Prop on Bone Placement",
         name = "boneobj",
         usage = "/boneobj [object name] [bone name]",
@@ -662,7 +662,7 @@ AD.Commands = {
     },  
     resetped = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Reload Skin",
         name = "resetped",
         usage = "/resetped",
@@ -672,7 +672,7 @@ AD.Commands = {
     },
     die = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Die",
         name = "die",
         usage = "/die",
@@ -682,7 +682,7 @@ AD.Commands = {
     },
     handcuff = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Handcuff Player",
         name = "handcuff",
         usage = "/handcuff [player ID]",
@@ -694,7 +694,7 @@ AD.Commands = {
     },
     deleteliveobj = {
         enabled = true,
-        category = "default",
+        category = "object",
         title = "Delete Placed Objects",
         name = "liveobjd",
         usage = "/liveobjd",
@@ -704,7 +704,7 @@ AD.Commands = {
     },
     deleteliveped = {
         enabled = true,
-        category = "default",
+        category = "world",
         title = "Delete Placed Peds",
         name = "livepedd",
         usage = "/livepedd",
@@ -714,7 +714,7 @@ AD.Commands = {
     },
     addAttachments = {
         enabled = true,
-        category = "default",
+        category = "player",
         title = "Add Attachments",
         name = "addweaponattachments",
         usage = "/addweaponattachments",
