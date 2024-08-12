@@ -18,7 +18,8 @@ for cmdName, cmdData in pairs(AD.Commands) do
         usage = cmdData.usage,
         enabled = cmdData.enabled,
         icon = cmdData.icon or "fas fa-terminal",
-        category = cmdData.category
+        category = cmdData.category,
+        mode = cmdData.mode
     })
 end
 
@@ -39,9 +40,11 @@ function OpenMenu()
     SendNUIMessage({
         action = "openMenu",
         commands = Menu.commands,
-        favorites = favorites
+        favorites = favorites,
+        optionLists = AD.OptionLists
     })
     SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(false)
 end
 
 function CloseMenu()
@@ -49,6 +52,7 @@ function CloseMenu()
         Menu.isOpen = false
         SendNUIMessage({action = "closeMenu"})
         SetNuiFocus(false, false)
+        SetNuiFocusKeepInput(false)
     end
 end
 
@@ -76,9 +80,14 @@ end)
 
 RegisterNUICallback('toggleCommand', function(data, cb)
     local cmdName = data.name
+    local isEnabled = data.enabled
+    local mode = data.mode
+
     if AD.Commands[cmdName] then
-        ExecuteCommand(AD.Commands[cmdName].name)
-        AD.Commands[cmdName].enabled = not AD.Commands[cmdName].enabled
+        AD.Commands[cmdName].enabled = isEnabled
+        if mode == "slider1" or (mode == "slider2" and isEnabled) then
+            ExecuteCommand(AD.Commands[cmdName].name)
+        end
     else
         QBCore.Functions.Notify("Command not found", "error")
     end
@@ -93,6 +102,16 @@ end)
 
 RegisterNUICallback('closeMenu', function(data, cb)
     CloseMenu()
+    cb('ok')
+end)
+
+RegisterNUICallback('focusOn', function(data, cb)
+    SetNuiFocusKeepInput(false)
+    cb('ok')
+end)
+
+RegisterNUICallback('focusOff', function(data, cb)
+    SetNuiFocusKeepInput(true)
     cb('ok')
 end)
 
