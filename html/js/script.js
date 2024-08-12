@@ -3,7 +3,7 @@ let currentCategory = 'all';
 let favorites = [];
 let isDarkMode = true;
 
-window.addEventListener("message", (event) => {
+window.addEventListener("message", async (event) => {
     const data = event.data;
     if (data.action === "openMenu") {
         commands = data.commands;
@@ -15,14 +15,6 @@ window.addEventListener("message", (event) => {
         }
     } else if (data.action === "closeMenu") {
         closeMenu();
-        document.getElementById('menu').style.display = 'none';
-    } else if (data.action === "copy") {
-        const el = document.createElement("textarea");
-        el.value = data.text;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand("copy");
-        document.body.removeChild(el);
     }
 });
 
@@ -45,17 +37,60 @@ function renderMenu(filteredCommands = commands) {
             <p>${cmd.description}</p>
             <p><strong>Command:</strong> ${cmd.usage}</p>
             ${cmd.parameters.length > 0 ? 
-                cmd.parameters.map(param => `
-                    <input type="text" id="params-${cmd.name}-${param.name}" placeholder="${param.help}">
-                `).join('') + `<button onclick="executeCommand('${cmd.name}')">Confirm</button>`
-                : 
-                `<label class="switch">
-                    <input type="checkbox" id="toggle-${cmd.name}" ${cmd.enabled ? 'checked' : ''} onchange="toggleCommand('${cmd.name}', this.checked)">
-                    <span class="slider"></span>
-                </label>`
+                cmd.parameters.map(param => renderParameter(cmd.name, param)).join('') + 
+                `<button onclick="executeCommand('${cmd.name}')">Confirm</button>`
+                : renderNonParameterControl(cmd)
             }
         `;
         commandList.appendChild(cmdElement);
+    });
+    initParameterFocus();
+}
+
+function renderNonParameterControl(cmd) {
+    switch(cmd.mode) {
+        case "toggle":
+            return `<button onclick="executeCommand('${cmd.name}')" class="execute-btn">Execute</button>`;
+        case "slider1":
+        case "slider2":
+            return `<label class="switch">
+                <input type="checkbox" id="toggle-${cmd.name}" onchange="toggleCommand('${cmd.name}', this.checked, '${cmd.mode}')">
+                <span class="slider"></span>
+            </label>`;
+        default:
+            return '';
+    }
+}
+
+function renderParameter(cmdName, param) {
+    switch (param.type) {
+        case 'text':
+            return `<input type="text" id="params-${cmdName}-${param.name}" placeholder="${param.help}">`;
+        default:
+            return `<input type="text" id="params-${cmdName}-${param.name}" placeholder="${param.help}">`;
+    }
+}
+
+function initParameterFocus() {
+    document.querySelectorAll('input[type="text"], select').forEach(element => {
+        element.addEventListener('focus', function() {
+            fetch(`https://${GetParentResourceName()}/focusOn`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({})
+            });
+        });
+        element.addEventListener('blur', function() {
+            fetch(`https://${GetParentResourceName()}/focusOff`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({})
+            });
+        });
     });
 }
 
@@ -93,9 +128,10 @@ function saveFavorites() {
 
 function executeCommand(name) {
     const command = commands.find(cmd => cmd.name === name);
-    const params = command.parameters.map(param => 
-        document.getElementById(`params-${name}-${param.name}`).value
-    );
+    const params = command.parameters ? command.parameters.map(param => {
+        const element = document.getElementById(`params-${name}-${param.name}`);
+        return element ? element.value : '';
+    }) : [];
     fetch(`https://${GetParentResourceName()}/executeCommand`, {
         method: 'POST',
         headers: {
@@ -108,17 +144,14 @@ function executeCommand(name) {
     });
 }
 
-function toggleCommand(name, isEnabled) {
-    fetch(`https://${GetParentResourceName()}/toggleCommand`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: JSON.stringify({
-            name: name,
-            enabled: isEnabled
-        })
-    });
+function toggleCommand(name, isEnabled, mode) {
+    const command = commands.find(cmd => cmd.name === name);
+    if (command) {
+        command.enabled = isEnabled;
+        if (mode === 'slider1' || (mode === 'slider2' && isEnabled)) {
+            executeCommand(name);
+        }
+    }
 }
 
 function closeMenu() {
@@ -175,6 +208,19 @@ $(document).ready(function() {
 });
 
 document.querySelector('.menu-close').addEventListener('click', closeMenu);
+
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('menu');
+    if (menu && !menu.contains(event.target)) {
+        fetch(`https://${GetParentResourceName()}/closeMenu`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify({})
+        });
+    }
+});
 
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape" && document.getElementById('menu').style.display !== 'none') {
