@@ -59,7 +59,7 @@
 
 # Installation
 
-* Add `ALTER TABLE players ADD COLUMN favorites TEXT;` to your SQL
+* Run `atiya-dev.sql` from your `[INSTALL]` in your SQL.
 
 # Dependencies
 
