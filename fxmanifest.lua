@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'Atiya'
 description 'Atiya Developer Tools'
-version '1.0.0'
+version '1.0.1'
 
 client_scripts {
     'client/*.lua',
@@ -26,6 +26,7 @@ files {
     'html/*.html',
     'html/js/*.js',
     'html/css/*.css',
+    'html/jsondb/*.json',
 }
 
 ui_page 'html/index.html'
