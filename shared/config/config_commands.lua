@@ -135,7 +135,7 @@ AD.Commands = {
         usage = "/liveped [ped name/hash]",
         description = "Start placing a live ped and control it's location.",
         parameters = {
-            {name = "pedName", help = "Name or hash of the ped to place"}
+            {name = "pedName", help = "Name or hash of the ped to place", type = "dropdown1", source = "peds"}
         },
         icon = "fas fa-user-alt"
     },    
@@ -166,7 +166,7 @@ AD.Commands = {
     unfreeze = {
         enabled = true,
         category = "player",
-        title = "UnFreeze Player",
+        title = "Unfreeze Player",
         name = "unfreezea",
         usage = "/unfreezea [player ID]",
         description = "Unfreeze a player.",
@@ -183,7 +183,7 @@ AD.Commands = {
         usage = "/obja [object name]",
         description = "Spawn an object.",
         parameters = {
-            {name = "objectName", help = "Name of the object"}
+            {name = "objectName", help = "Name of the object", type = "dropdown1", source = "items"}
         },
         icon = "fas fa-cube"
     },
@@ -195,7 +195,7 @@ AD.Commands = {
         usage = "/objda [object name]",
         description = "Delete a specific nearby object.",
         parameters = {
-            {name = "objectName", help = "Name of the object"}
+            {name = "objectName", help = "Name of the object", type = "dropdown1", source = "items"}
         },
         icon = "fas fa-trash-alt"
     },
@@ -219,7 +219,7 @@ AD.Commands = {
         usage = "/delvehicle",
         description = "Delete the vehicle in front of you.",
         parameters = {},
-        mode = "slider2",
+        mode = "toggle",
         icon = "fas fa-car-crash"
     },
     delvehicleinradius = {
@@ -289,7 +289,7 @@ AD.Commands = {
         description = "Retrieve a player's identifier (steam, rockstar, discord, fivem).",
         parameters = {
             {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "identifierType", help = "Identifier type (steam, rockstar, discord, fivem)", type = "text"}
+            {name = "identifierType", help = "Identifier type", type = "dropdown2", dd2actions = "Steam,Rockstar,Discord,FiveM"}
         },
         icon = "fas fa-id-badge"
     },
@@ -301,7 +301,7 @@ AD.Commands = {
         usage = "/polya [start/add/finish]",
         description = "Manage polyzones (start, add points, or finish).",
         parameters = {
-            { name = "action", help = "'start', 'add', or 'finish'.", type = "text"}
+            { name = "action", help = "Polyzone action", type = "dropdown2", dd2actions = "Start,Add,Finish"}
         },
         icon = "fas fa-draw-polygon"
     },
@@ -369,7 +369,7 @@ AD.Commands = {
         description = "Apply a screen effect to a player.",
         parameters = {
             {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "effect", help = "Effect name or number (1-70)"}
+            {name = "effect", help = "Effect name or number (1-70)", type = "dropdown2", dd2actions = "BeastIntroScene,BeastLaunch,BeastTransition,BikerFilter,BikerFilterOut,BikerFormation,BikerFormationOut,CamPushInFranklin,CamPushInMichael,CamPushInNeutral,CamPushInTrevor,ChopVision,CrossLine,CrossLineOut,DeadlineNeon,DeathFailFranklinIn,DeathFailMichaelIn,DeathFailMPDark,DeathFailMPIn,DeathFailNeutralIn,DeathFailOut,DeathFailTrevorIn,DefaultFlash,DMT_flight,DMT_flight_intro,Dont_tazeme_bro,DrugsDrivingIn,DrugsDrivingOut,DrugsMichaelAliensFight,DrugsMichaelAliensFightIn,DrugsMichaelAliensFightOut,DrugsTrevorClownsFight,DrugsTrevorClownsFightIn,DrugsTrevorClownsFightOut,ExplosionJosh3,FocusIn,FocusOut,HeistCelebEnd,HeistCelebPass,HeistCelebPassBW,HeistCelebToast,HeistLocate,HeistTripSkipFade,InchOrange,InchOrangeOut,InchPickup,InchPickupOut,InchPurple,InchPurpleOut,LostTimeDay,LostTimeNight,MenuMGHeistIn,MenuMGHeistIntro,MenuMGHeistOut,MenuMGHeistTint,MenuMGIn,MenuMGSelectionIn,MenuMGSelectionTint,MenuMGTournamentIn,MenuMGTournamentTint,MinigameEndFranklin,MinigameEndMichael,MinigameEndNeutral,MinigameEndTrevor,MinigameTransitionIn,MinigameTransitionOut,MP_Bull_tost,MP_Bull_tost_Out,MP_Celeb_Lose,MP_Celeb_Lose_Out,MP_Celeb_Preload,MP_Celeb_Preload_Fade,MP_Celeb_Win,MP_Celeb_Win_Out,MP_corona_switch,MP_intro_logo,MP_job_load,MP_Killstreak,MP_Killstreak_Out,MP_Loser_Streak_Out,MP_OrbitalCannon,MP_Powerplay,MP_Powerplay_Out,MP_race_crash,MP_SmugglerCheckpoint,MP_TransformRaceFlash,MP_WarpCheckpoint,PauseMenuOut,pennedIn,PennedInOut,PeyoteEndIn,PeyoteEndOut,PeyoteIn,PeyoteOut,PPFilter,PPFilterOut,PPGreen,PPGreenOut,PPOrange,PPOrangeOut,PPPink,PPPinkOut,PPPurple,PPPurpleOut,RaceTurbo,Rampage,RampageOut,SniperOverlay,SuccessFranklin,SuccessMichael,SuccessNeutral,SuccessTrevor,switch_cam_1,switch_cam_2,SwitchHUDFranklinIn,SwitchHUDFranklinOut,SwitchHUDIn,SwitchHUDMichaelIn,SwitchHUDMichaelOut,SwitchHUDOut,SwitchHUDTrevorIn,SwitchHUDTrevorOut,SwitchOpenFranklin,SwitchOpenFranklinIn,SwitchOpenFranklinOut,SwitchOpenMichaelIn,SwitchOpenMichaelMid,SwitchOpenMichaelOut,SwitchOpenNeutralFIB5,SwitchOpenNeutralOutHeist,SwitchOpenTrevorIn,SwitchOpenTrevorOut,SwitchSceneFranklin,SwitchSceneMichael,SwitchSceneNeutral,SwitchSceneTrevor,SwitchShortFranklinIn,SwitchShortFranklinMid,SwitchShortMichaelIn,SwitchShortMichaelMid,SwitchShortNeutralIn,SwitchShortNeutralMid,SwitchShortTrevorIn,SwitchShortTrevorMid,TinyRacerGreen,TinyRacerGreenOut,TinyRacerIntroCam,TinyRacerPink,TinyRacerPinkOut,WeaponUpgrade"}
         },
         icon = "fas fa-magic"
     },
@@ -417,7 +417,7 @@ AD.Commands = {
         usage = "/spawnped [ped name/hash]",
         description = "Spawn a ped.",
         parameters = {
-            {name = "pedNameOrHash", help = "Name or hash of the ped"}
+            {name = "pedNameOrHash", help = "Name or hash of the ped", type = "dropdown1", source = "peds"}
         },
         icon = "fas fa-user-plus"
     },
@@ -429,7 +429,7 @@ AD.Commands = {
         usage = "/pspawnca [ped name/hash] [x] [y] [z] [heading]",
         description = "Spawn a ped at specific coordinates.",
         parameters = {
-            {name = "pedNameOrHash", help = "Name or hash of the ped"},
+            {name = "pedNameOrHash", help = "Name or hash of the ped", type = "dropdown1", source = "peds"},
             {name = "x", help = "X coordinate", type = "text"},
             {name = "y", help = "Y coordinate", type = "text"},
             {name = "z", help = "Z coordinate", type = "text"},
@@ -446,7 +446,7 @@ AD.Commands = {
         description = "Toggle a player's ped model.",
         parameters = {
             {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "pedNameOrHash", help = "Name or hash of the ped"}
+            {name = "pedNameOrHash", help = "Name or hash of the ped", type = "dropdown1", source = "peds"}
         },
         icon = "fas fa-exchange-alt"
     },
@@ -494,7 +494,7 @@ AD.Commands = {
         usage = "/setweather [weather type]",
         description = "Set the in-game weather.",
         parameters = {
-            {name = "weatherType", help = "Type of weather (e.g., CLEAR, RAIN, SNOW)", type = "text"}
+            {name = "weatherType", help = "Type of weather (e.g., CLEAR, RAIN, SNOW)", type = "dropdown2", dd2actions = "EXTRASUNNY,CLEAR,CLOUDS,SMOG,FOGGY,OVERCAST,RAIN,THUNDER,CLEARING,NEUTRAL,SNOW,BLIZZARD,SNOWLIGHT,XMAS,HALLOWEEN"}
         },
         icon = "fas fa-cloud-sun-rain"
     },
@@ -673,8 +673,8 @@ AD.Commands = {
         usage = "/boneobj [object name] [bone name]",
         description = "Edit the position of a object on one of your bones.",
         parameters = {
-            {name = "objectName", help = "Name or hash of the object"},
-            {name = "boneName", help = "Name or ID of the bone to attach the object"}
+            {name = "objectName", help = "Name or hash of the object", type = "dropdown1", source = "items"},
+            {name = "boneName", help = "Name or ID of the bone to attach the object", type = "dropdown1", source = "bones"}
         },
         icon = "fas fa-bone"
     },  
@@ -744,7 +744,7 @@ AD.Commands = {
         parameters = {},
         mode = "toggle",
         icon = "fas fa-tools"
-    } 
+    },
 }
 
 return AD
