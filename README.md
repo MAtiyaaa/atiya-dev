@@ -42,6 +42,7 @@
 ![image](https://i.imgur.com/e7WCFng.png)
 # Features
 * Developer **menu** with all options available as an alternative to using commands.
+* **Dropdown** menu with bone names, ped names, and all props.
 * Setting up **polyzone** markers.
 * Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
 * Moving around a **ped or object** live and saving their coordinates.
@@ -59,7 +60,7 @@
 
 # Installation
 
-* Add `ALTER TABLE players ADD COLUMN favorites TEXT;` to your SQL
+* Add `atiya-dev.sql` FROM YOUR [INSTALL] folder
 
 # Dependencies
 
