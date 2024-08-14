@@ -2,6 +2,9 @@ let commands = [];
 let currentCategory = 'all';
 let favorites = [];
 let isDarkMode = true;
+let bonesList = [];
+let itemsList = [];
+let pedsList = [];
 
 window.addEventListener("message", async (event) => {
     const data = event.data;
@@ -13,10 +16,21 @@ window.addEventListener("message", async (event) => {
         if (!$("#menu").data("draggable")) {
             initializeDraggable();
         }
-    } else if (data.action === "closeMenu") {
+        restoreMenuState();
+    }
+    else if (data.action === "closeMenu") {
         closeMenu();
     }
+    else if (data.action === "copy") {
+        const el = document.createElement("textarea");
+        el.value = data.text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+    }
 });
+
 
 function renderMenu(filteredCommands = commands) {
     const menu = document.getElementById('menu');
@@ -45,7 +59,30 @@ function renderMenu(filteredCommands = commands) {
         commandList.appendChild(cmdElement);
     });
     initParameterFocus();
+    $('.searchable-dropdown').select2();
 }
+
+function fetchJSONData(filename) {
+    return fetch(`nui://${GetParentResourceName()}/html/jsondb/${filename}`)
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error loading JSON:', error);
+            return null;
+        });
+}
+
+Promise.all([
+    fetchJSONData('bones.json'),
+    fetchJSONData('itemlist.json'),
+    fetchJSONData('peds.json')
+]).then(([bonesData, itemsData, pedsData]) => {
+    bonesList = Object.values(bonesData || {});
+    itemsList = itemsData || [];
+    pedsList = pedsData || [];
+    renderMenu();
+}).catch(error => {
+    console.error('Error loading JSON data:', error);
+});
 
 function renderNonParameterControl(cmd) {
     switch(cmd.mode) {
@@ -59,15 +96,6 @@ function renderNonParameterControl(cmd) {
             </label>`;
         default:
             return '';
-    }
-}
-
-function renderParameter(cmdName, param) {
-    switch (param.type) {
-        case 'text':
-            return `<input type="text" id="params-${cmdName}-${param.name}" placeholder="${param.help}">`;
-        default:
-            return `<input type="text" id="params-${cmdName}-${param.name}" placeholder="${param.help}">`;
     }
 }
 
@@ -144,6 +172,60 @@ function executeCommand(name) {
     });
 }
 
+function saveMenuState() {
+    const state = {
+        category: currentCategory,
+        toggles: getToggleStates(),
+        dropdowns: getDropdownStates()
+    };
+    localStorage.setItem('menuState', JSON.stringify(state));
+}
+
+function getToggleStates() {
+    const toggles = {};
+    document.querySelectorAll('.switch input[type="checkbox"]').forEach(toggle => {
+        toggles[toggle.id] = toggle.checked;
+    });
+    return toggles;
+}
+
+function getDropdownStates() {
+    const dropdowns = {};
+    document.querySelectorAll('.searchable-dropdown').forEach(dropdown => {
+        dropdowns[dropdown.id] = dropdown.value;
+    });
+    return dropdowns;
+}
+
+function restoreMenuState() {
+    const state = JSON.parse(localStorage.getItem('menuState'));
+    if (state) {
+        currentCategory = state.category;
+        setToggleStates(state.toggles);
+        setDropdownStates(state.dropdowns);
+        filterCategory(currentCategory);
+    }
+}
+
+function setToggleStates(toggles) {
+    for (const [id, checked] of Object.entries(toggles)) {
+        const toggle = document.getElementById(id);
+        if (toggle) {
+            toggle.checked = checked;
+        }
+    }
+}
+
+function setDropdownStates(dropdowns) {
+    for (const [id, value] of Object.entries(dropdowns)) {
+        const dropdown = document.getElementById(id);
+        if (dropdown) {
+            dropdown.value = value;
+            $(dropdown).trigger('change');
+        }
+    }
+}
+
 function toggleCommand(name, isEnabled, mode) {
     const command = commands.find(cmd => cmd.name === name);
     if (command) {
@@ -155,6 +237,7 @@ function toggleCommand(name, isEnabled, mode) {
 }
 
 function closeMenu() {
+    saveMenuState();
     document.getElementById('menu').style.display = 'none';
     fetch(`https://${GetParentResourceName()}/closeMenu`, {
         method: 'POST',
@@ -205,13 +288,15 @@ function initializeDraggable() {
 $(document).ready(function() {
     renderMenu();
     initializeDraggable();
+    $('.searchable-dropdown').select2();
 });
 
 document.querySelector('.menu-close').addEventListener('click', closeMenu);
 
 document.addEventListener('click', function(event) {
     const menu = document.getElementById('menu');
-    if (menu && !menu.contains(event.target)) {
+    const isSelect2Element = event.target.closest('.select2-container') !== null;
+    if (menu && !menu.contains(event.target) && !isSelect2Element) {
         fetch(`https://${GetParentResourceName()}/closeMenu`, {
             method: 'POST',
             headers: {
@@ -227,3 +312,108 @@ document.addEventListener('keydown', function(event) {
         closeMenu();
     }
 });
+
+function renderParameter(cmdName, param) {
+    let paramElement = '';
+    switch (param.type) {
+        case 'dropdown1':
+            paramElement = renderSearchableDropdown(cmdName, param);
+            break;
+        case 'dropdown2':
+            paramElement = renderSimpleDropdown(cmdName, param);
+            break;
+        case 'text':
+        default:
+            paramElement = `<input type="text" id="params-${cmdName}-${param.name}" placeholder="Type something...">`;
+            break;
+    }
+    
+    return `
+        <div class="param-container">
+            <label for="params-${cmdName}-${param.name}">${param.help}</label>
+            ${paramElement}
+        </div>
+    `;
+}
+
+function renderSearchableDropdown(cmdName, param) {
+    let options = [];
+
+    if (param.source === 'bones') {
+        options = bonesList.map(bone => ({
+            id: bone.BoneId,
+            text: `${bone.BoneName} (${bone.BoneId})`
+        }));
+    } else if (param.source === 'items') {
+        options = itemsList.map(item => ({
+            id: item.ModNam,
+            text: `${item.ModNam} (${item.HashIs})`
+        }));
+    } else if (param.source === 'peds') {
+        options = pedsList.map(ped => ({
+            id: ped.Name,
+            text: `${ped.Title} (${ped.Name})`
+        }));
+    } 
+    return `
+        <select id="params-${cmdName}-${param.name}" class="searchable-dropdown">
+            <option value="">Select an Option</option>
+            ${options.slice(0, 1000).map(option => `<option value="${option.id}">${option.text}</option>`).join('')}
+        </select>
+    `;
+}
+
+function renderSimpleDropdown(cmdName, param) {
+    const options = param.dd2actions.split(',').map(action => action.trim());
+    return `
+        <select id="params-${cmdName}-${param.name}" class="simple-dropdown">
+            <option value="">Select an option</option>
+            ${options.map(option => `<option value="${option}">${option}</option>`).join('')}
+        </select>
+    `;
+}
+
+function initializeSelect2() {
+    $('.searchable-dropdown').each(function() {
+        const $select = $(this);
+        const dataSource = $select.data('source');
+        
+        $select.select2({
+            placeholder: 'Select an option',
+            allowClear: true,
+            width: '100%',
+            ajax: {
+                transport: function(params, success, failure) {
+                    let data = [];
+                    const searchTerm = params.data.term ? params.data.term.toLowerCase() : '';
+                    
+                    if (dataSource === 'bones') {
+                        data = filterAndMapData(bonesList, searchTerm, 'BoneName', 'BoneId');
+                    } else if (dataSource === 'items') {
+                        data = filterAndMapData(itemsList, searchTerm, 'ModNam', 'HashIs');
+                    } else if (dataSource === 'peds') {
+                        data = filterAndMapData(pedsList, searchTerm, 'Name', 'Title');
+                    }
+                    success({ results: data });
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            },
+            minimumInputLength: 1
+        });
+    });
+}
+
+function filterAndMapData(list, searchTerm, textKey, valueKey) {
+    return list.filter(item => {
+        const text = valueKey ? `${item[textKey]} (${item[valueKey]})` : item;
+        return text.toLowerCase().includes(searchTerm);
+    }).slice(0, 100).map(item => {
+        const text = valueKey ? `${item[textKey]} (${item[valueKey]})` : item;
+        const value = valueKey ? item[valueKey] : item;
+        return { id: value, text: text };
+    });
+}
