@@ -1,5 +1,5 @@
 
-# Developer Tools for QBCore FiveM
+# Developer Tools for QBCore & ESX FiveM
 
 * Made by Atiya
 
@@ -17,7 +17,9 @@
 
 *  This was not meant to be a release, as I just made this to make my life a bit easier so some of the code available is probably useless and/or overdoing it.
 
-* ESX Support is experimental and may be subject to changes. (check the `fxmanifest.lua` & `config.lua` before using)
+*  ESX Support is experimental and may be subject to changes. (check the `fxmanifest.lua` & `config.lua` before using)
+
+*  ESX Support by `PegosStelios`
 
 
 
@@ -64,7 +66,7 @@
 
 * Add `atiya-dev-qb.sql` or `atiya-dev-esx` FROM YOUR [INSTALL] folder
 
-# Dependencies
+## Required only for QB support
 
 * [QBCore](https://github.com/qbcore-framework)
 * [oxmysql](https://github.com/overextended/oxmysql)
@@ -73,3 +75,4 @@
 
 * [es_extended](https://github.com/esx-framework/esx_core)
 * [ox_lib](https://github.com/overextended/ox_lib)
+* [oxmysql](https://github.com/overextended/oxmysql)
