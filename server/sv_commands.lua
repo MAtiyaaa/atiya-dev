@@ -840,7 +840,6 @@ if AD.Commands.noclip.enabled == true then
         -- nothing yet
     end
 end
-end
 
 if AD.Commands.addAttachments.enabled == true then
     if not ADC.Config.ESX then
