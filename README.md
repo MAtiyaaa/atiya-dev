@@ -1,5 +1,5 @@
 
-# Developer Tools for QBCore & ESX FiveM
+# Developer Tools for FiveM
 
 * Made by Atiya
 
