@@ -15,6 +15,7 @@ server_scripts {
 }
 
 shared_scripts {
+    -- '@ox_lib/init.lua', -- uncomment to enable esx
     'shared/*.lua',
     'shared/db/*.lua',
     'shared/config/config_commands.lua',
@@ -32,7 +33,9 @@ files {
 ui_page 'html/index.html'
 
 dependencies {
-    'qb-core'
+    'qb-core', -- comment to enable esx
+    -- 'es_extended', -- uncomment to enable esx
+    -- 'ox_lib' -- uncomment to enable esx
 }
 
 lua54 'yes'

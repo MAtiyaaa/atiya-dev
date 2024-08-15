@@ -1,4 +1,4 @@
-QBCore = exports['qb-core']:GetCoreObject()
+if not ADC.Config.ESX then QBCore = exports['qb-core']:GetCoreObject() end
 
 local polyzonePoints = {}
 local placedObjects = {}
@@ -31,12 +31,42 @@ local lateralOffset = 0.0
 local fixedZLevel = 0.0
 local markerPosition = vector3(0.0, 0.0, 0.0)
 
+
+function sendNotify(text, type, duration)
+    if ADC.Config.ESX then
+        if type == 'primary' then type = 'inform' end
+        if duration ~= nil then
+            lib.notify({
+                title = text,
+                type = type,
+                duration = duration
+            })
+            return
+        end
+        lib.notify({
+            title = text,
+            type = type
+        })
+    else
+        TriggerEvent('QBCore:Notify', text, type)
+        return
+    end
+end
+
 local function copyToClipboard(coordinateText, coordType)
     SendNUIMessage({
         action = "copy",
         text = coordinateText
     })
-    QBCore.Functions.Notify("Saved: " .. coordinateText .. " (Copied to clipboard)", "success")
+    if not ADC.Config.ESX then
+        QBCore.Functions.Notify("Saved: " .. coordinateText .. " (Copied to clipboard)", "success")
+    else
+        lib.notify({
+            title = "Saved: " .. coordinateText,
+            description = '(Copied to clipboard)',
+            type = 'success'
+        })
+    end
 end
 
 RegisterNetEvent("atiya-dev:copyToClipboard", function(coordinateText, type)
@@ -46,13 +76,13 @@ end)
 RegisterNetEvent('atiya-dev:setInvincibility', function()
     invincible = not invincible
     if invincible then
-        TriggerEvent('QBCore:Notify', 'God Mode: On', 'success')
+        sendNotify('God Mode: On', 'success')
         while invincible do
             Wait(0)
             SetPlayerInvincible(PlayerId(), true)
         end
         SetPlayerInvincible(PlayerId(), false)
-        TriggerEvent('QBCore:Notify', 'God Mode: Off', 'error')
+        sendNotify('God Mode: Off', 'error')
     end
 end)
 
@@ -69,11 +99,11 @@ RegisterNetEvent('atiya-dev:setInfiniteAmmo', function()
         SetPedInfiniteAmmo(playerPed, true)
         SetPedInfiniteAmmoClip(playerPed, true)
         SetPedAmmo(playerPed, GetSelectedPedWeapon(playerPed), 999)
-        TriggerEvent('QBCore:Notify', 'Unlimited ammo activated.', 'success')
+        sendNotify('Unlimited ammo activated.', 'success')
     else
         SetPedInfiniteAmmo(playerPed, false)
         SetPedInfiniteAmmoClip(playerPed, false)
-        TriggerEvent('QBCore:Notify', 'Unlimited ammo deactivated.', 'success')
+        sendNotify('Unlimited ammo deactivated.', 'success')
     end
 end)
 
@@ -98,7 +128,7 @@ RegisterNetEvent('atiya-dev:spawnObject', function(objectName)
     SetEntityHeading(object, GetEntityHeading(playerPed))
     PlaceObjectOnGroundProperly(object)
     SetModelAsNoLongerNeeded(objectHash)
-    TriggerEvent('QBCore:Notify', ('Spawned object %s'):format(objectName), 'success')
+    sendNotify(('Spawned object %s'):format(objectName), 'success')
 end)
 
 RegisterNetEvent('atiya-dev:deleteNearbyObject', function(objectName)
@@ -108,9 +138,9 @@ RegisterNetEvent('atiya-dev:deleteNearbyObject', function(objectName)
     local object = GetClosestObjectOfType(coords, 5.0, objectHash, false, false, false)
     if DoesEntityExist(object) then
         DeleteObject(object)
-        TriggerEvent('QBCore:Notify', ('Deleted nearby %s object'):format(objectName), 'success')
+        sendNotify(('Deleted nearby %s object'):format(objectName), 'success')
     else
-        TriggerEvent('QBCore:Notify', ('No %s object found nearby'):format(objectName), 'error')
+        sendNotify(('No %s object found nearby'):format(objectName), 'error')
     end
 end)
 
@@ -123,7 +153,7 @@ RegisterNetEvent('atiya-dev:deleteObjectsInRadius', function(radius)
             DeleteObject(object)
         end
     end
-    TriggerEvent('QBCore:Notify', ('Deleted all objects within %d meters'):format(radius), 'success')
+    sendNotify(('Deleted all objects within %d meters'):format(radius), 'success')
 end)
 
 RegisterNetEvent('atiya-dev:deleteVehicleInFront', function()
@@ -134,9 +164,9 @@ RegisterNetEvent('atiya-dev:deleteVehicleInFront', function()
     local vehicle = GetClosestVehicle(targetCoords, 5.0, 0, 70)
     if DoesEntityExist(vehicle) then
         DeleteVehicle(vehicle)
-        TriggerEvent('QBCore:Notify', 'Deleted nearby vehicle', 'success')
+        sendNotify('Deleted nearby vehicle', 'success')
     else
-        TriggerEvent('QBCore:Notify', 'No vehicle found nearby', 'error')
+        sendNotify('No vehicle found nearby', 'error')
     end
 end)
 
@@ -149,7 +179,7 @@ RegisterNetEvent('atiya-dev:deleteVehiclesInRadius', function(radius)
             DeleteVehicle(vehicle)
         end
     end
-    TriggerEvent('QBCore:Notify', ('Deleted all vehicles within %d meters'):format(radius), 'success')
+    sendNotify(('Deleted all vehicles within %d meters'):format(radius), 'success')
 end)
 
 RegisterNetEvent('atiya-dev:startMarkerPointing', function()
@@ -157,7 +187,7 @@ RegisterNetEvent('atiya-dev:startMarkerPointing', function()
     if markerActive then
         local playerPed = PlayerPedId()
         markerPosition = GetEntityCoords(playerPed)
-        TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Marker Pointing.', 'primary')
+        sendNotify('View the CONTROLS.MD file to learn the controls under Marker Pointing.', 'primary')
         Citizen.CreateThread(function()
             while markerActive do
                 Citizen.Wait(0)
@@ -194,11 +224,11 @@ RegisterNetEvent('atiya-dev:startMarkerPointing', function()
                         2,
                         false,
                         nil, nil, false
-                    )                    
+                    )
                     if IsControlJustReleased(0, 38) then
                         local coordsText = string.format('vector4(%.2f, %.2f, %.2f, %.2f)', hitCoords.x, hitCoords.y, hitCoords.z + arrowHeight, arrowHeading)
                         TriggerEvent("atiya-dev:copyToClipboard", coordsText, "vector4")
-                        TriggerEvent('QBCore:Notify', 'Coordinates saved.', 'success')
+                        sendNotify('Coordinates saved.', 'success')
                     end
                 end
                 if IsControlPressed(0, 174) then
@@ -212,7 +242,7 @@ RegisterNetEvent('atiya-dev:startMarkerPointing', function()
                     arrowHeight = arrowHeight - 0.02
                 end
             end
-            TriggerEvent('QBCore:Notify', 'Marker coordinates mode disabled.', 'error')
+            sendNotify('Marker coordinates mode disabled.', 'error')
         end)
     end
 end)
@@ -220,7 +250,7 @@ end)
 RegisterNetEvent('atiya-dev:toggleCoords', function()
     showCoords = not showCoords
     if showCoords then
-        TriggerEvent('QBCore:Notify', 'Live coordinates enabled. Toggle off by using /coordsa again.', 'success')
+        sendNotify('Live coordinates enabled. Toggle off by using /coordsa again.', 'success')
         Citizen.CreateThread(function()
             while showCoords do
                 Citizen.Wait(1)
@@ -230,7 +260,7 @@ RegisterNetEvent('atiya-dev:toggleCoords', function()
                 local coordsText = string.format('vector4(%.2f, %.2f, %.2f, %.2f)', coords.x, coords.y, coords.z, heading)
                 DrawTextOnScreen(coordsText, 0.5, 0.95)
             end
-            TriggerEvent('QBCore:Notify', 'Live coordinates disabled.', 'error')
+            sendNotify('Live coordinates disabled.', 'error')
         end)
     end
 end)
@@ -254,7 +284,7 @@ RegisterNetEvent('atiya-dev:copyIdentifier', function(identifier)
         action = "copy",
         text = identifier
     })
-    TriggerEvent('QBCore:Notify', 'Identifier copied to clipboard.', 'success')
+    sendNotify('Identifier copied to clipboard.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:startPolyzone', function()
@@ -262,7 +292,7 @@ RegisterNetEvent('atiya-dev:startPolyzone', function()
     polyzoneActive = true
     local playerPed = PlayerPedId()
     fixedZLevel = GetEntityCoords(playerPed).z
-    TriggerEvent('QBCore:Notify', 'Polyzone drawing started. Now add your points!', 'success')
+    sendNotify('Polyzone drawing started. Now add your points!', 'success')
 end)
 
 local function DrawWall(p1, p2, zMin, zMax, colorR, colorG, colorB, alpha)
@@ -278,7 +308,7 @@ end
 
 RegisterNetEvent('atiya-dev:addPolyzonePoint', function()
     if not polyzoneActive then
-        TriggerEvent('QBCore:Notify', 'Polyzone not started. Start one first.', 'error')
+        sendNotify('Polyzone not started. Start one first.', 'error')
         return
     end
     local playerPed = PlayerPedId()
@@ -295,13 +325,13 @@ RegisterNetEvent('atiya-dev:addPolyzonePoint', function()
             DrawMarker(1, current.x, current.y, fixedZLevel - 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.2, 20.0, 0, 255, 0, 150, false, false, 2, false, nil, nil, false)
         end
     end)
-    TriggerEvent('QBCore:Notify', ('Point #%d added.'):format(#polyzonePoints), 'success')
+    sendNotify(('Point #%d added.'):format(#polyzonePoints), 'success')
 end)
 
 
 RegisterNetEvent('atiya-dev:finishPolyzone', function()
     if not polyzoneActive then
-        TriggerEvent('QBCore:Notify', 'Polyzone not started. Start one first.', 'error')
+        sendNotify('Polyzone not started. Start one first.', 'error')
         return
     end
     polyzoneActive = false
@@ -315,7 +345,7 @@ RegisterNetEvent('atiya-dev:finishPolyzone', function()
         action = "copy",
         text = polyzoneString
     })
-    TriggerEvent('QBCore:Notify', 'Polyzone copied to clipboard and printed to console.', 'success')
+    sendNotify('Polyzone copied to clipboard and printed to console.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:showNearbyProps', function()
@@ -433,7 +463,7 @@ RegisterNetEvent('atiya-dev:activateLaser', function()
                         action = "copy",
                         text = entityInfo
                     })
-                    TriggerEvent('QBCore:Notify', 'Entity info copied to clipboard.', 'success')
+                    sendNotify('Entity info copied to clipboard.', 'success')
                     laserActive = false
                 end
             end
@@ -469,8 +499,15 @@ RegisterNetEvent('atiya-dev:toggleDevInfo', function()
                 local playerCoords = GetEntityCoords(playerPed)
                 local playerHealth = GetEntityHealth(playerPed)
                 local playerArmor = GetPedArmour(playerPed)
-                local player = QBCore.Functions.GetPlayerData()
-                local stress = player.metadata and player.metadata['stress'] or 0
+                local player = nil
+                local stress = nil
+                if not ADC.Config.ESX then
+                    player = QBCore.Functions.GetPlayerData()
+                    stress = player.metadata and player.metadata['stress'] or 0
+                else
+                    -- nothing since there is no stress in esx
+                end
+
                 local vehicle = GetVehiclePedIsIn(playerPed, false)
                 local vehicleColumn1 = ""
                 local vehicleColumn2 = ""
@@ -496,7 +533,12 @@ RegisterNetEvent('atiya-dev:toggleDevInfo', function()
                 end
                 local heading = GetEntityHeading(playerPed)
                 local coordsText = string.format('vector4(%.2f, %.2f, %.2f, %.2f)', playerCoords.x, playerCoords.y, playerCoords.z, heading)
-                local devInfo = string.format('Health: %d\nArmor: %d\nStress: %.1f', playerHealth, playerArmor, stress)
+
+                if stress ~= nil then -- if it is nill it means esx is active
+                    local devInfo = string.format('Health: %d\nArmor: %d\nStress: %.1f', playerHealth, playerArmor, stress)
+                else
+                    local devInfo = string.format('Health: %d\nArmor: %d', playerHealth, playerArmor)
+                end
                 DrawText3D2(playerCoords.x, playerCoords.y, playerCoords.z + 1.0, devInfo)
                 DrawTextOnScreen(coordsText, 0.5, 0.95)
                 DrawTextonScreen2(vehicleColumn1, 0.7, 0.2)
@@ -527,10 +569,10 @@ RegisterNetEvent('atiya-dev:showCarInfo', function()
         local name = GetDisplayNameFromVehicleModel(hash)
         local wheelType = GetVehicleWheelType(vehicle)
         local carInfo = string.format('Car Name: %s\nHash: %d\nWheel Type: %d', name, hash, wheelType)
-        TriggerEvent('QBCore:Notify', carInfo, 'success')
+        sendNotify(carInfo, 'success')
         print(carInfo)
     else
-        TriggerEvent('QBCore:Notify', 'Not in a vehicle.', 'error')
+        sendNotify('Not in a vehicle.', 'error')
     end
 end)
 
@@ -542,9 +584,9 @@ RegisterNetEvent('atiya-dev:repairAndRefuelVehicle', function()
         SetVehicleEngineHealth(vehicle, 1000.0)
         SetVehicleBodyHealth(vehicle, 1000.0)
         exports[ADC.Config.Fuel]:SetFuel(vehicle, 100)
-        TriggerEvent('QBCore:Notify', 'Vehicle repaired and refueled.', 'success')
+        sendNotify('Vehicle repaired and refueled.', 'success')
     else
-        TriggerEvent('QBCore:Notify', 'Not in a vehicle.', 'error')
+        sendNotify('Not in a vehicle.', 'error')
     end
 end)
 
@@ -554,7 +596,7 @@ RegisterNetEvent('atiya-dev:applyScreenEffect', function(effectName)
     end
     AnimpostfxPlay(effectName, 0, true)
     currentScreenEffect = effectName
-    TriggerEvent('QBCore:Notify', ('Applied screen effect: %s'):format(effectName), 'success')
+    sendNotify(('Applied screen effect: %s'):format(effectName), 'success')
     Citizen.SetTimeout(effectDuration, function()
         if currentScreenEffect == effectName then
             AnimpostfxStop(effectName)
@@ -569,9 +611,9 @@ RegisterNetEvent('atiya-dev:adjustVehicleSpeed', function(multiplier)
     if vehicle ~= 0 and DoesEntityExist(vehicle) then
         local clampedMultiplier = math.min(multiplier, 10.0)
         SetVehicleEnginePowerMultiplier(vehicle, 20.0 * clampedMultiplier)
-        TriggerEvent('QBCore:Notify', ('Vehicle speed multiplier set to %.3f'):format(clampedMultiplier), 'success')
+        sendNotify(('Vehicle speed multiplier set to %.3f'):format(clampedMultiplier), 'success')
     else
-        TriggerEvent('QBCore:Notify', 'Not in a vehicle or invalid vehicle.', 'error')
+        sendNotify('Not in a vehicle or invalid vehicle.', 'error')
     end
 end)
 
@@ -586,7 +628,7 @@ RegisterNetEvent('atiya-dev:adjustPedSpeed', function(multiplier)
         end)
     else
         SetPedMoveRateOverride(playerPed, 1.0)
-        TriggerEvent('QBCore:Notify', 'Speed multiplier reset to normal.', 'error')
+        sendNotify('Speed multiplier reset to normal.', 'error')
     end
 end)
 
@@ -601,7 +643,7 @@ RegisterNetEvent('atiya-dev:spawnPed', function(pedHash, coords)
     local heading = coords and coords[4] or GetEntityHeading(playerPed)
     local ped = CreatePed(4, hash, spawnCoords.x, spawnCoords.y, spawnCoords.z, heading, true, true)
     FreezeEntityPosition(ped, true)
-    TriggerEvent('QBCore:Notify', 'Ped spawned successfully.', 'success')
+    sendNotify('Ped spawned successfully.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:togglePed', function(pedHash)
@@ -621,7 +663,7 @@ RegisterNetEvent('atiya-dev:togglePed', function(pedHash)
         originalPedModel = nil
     end
     SetModelAsNoLongerNeeded(hash)
-    TriggerEvent('QBCore:Notify', 'Toggled ped model.', 'success')
+    sendNotify('Toggled ped model.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:clearNearbyPeds', function()
@@ -633,7 +675,7 @@ RegisterNetEvent('atiya-dev:clearNearbyPeds', function()
             DeleteEntity(ped)
         end
     end
-    TriggerEvent('QBCore:Notify', 'Cleared nearby peds.', 'success')
+    sendNotify('Cleared nearby peds.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:clearPedsRadius', function(radius)
@@ -644,7 +686,7 @@ RegisterNetEvent('atiya-dev:clearPedsRadius', function(radius)
             DeleteEntity(ped)
         end
     end
-    TriggerEvent('QBCore:Notify', ('Cleared all peds within a radius of %.1f meters.'):format(radius), 'success')
+    sendNotify(('Cleared all peds within a radius of %.1f meters.'):format(radius), 'success')
 end)
 
 function EnumeratePeds()
@@ -760,11 +802,11 @@ Citizen.CreateThread(function()
 end)
 
 RegisterNetEvent('atiya-dev:setHealth', function(health)
-    SetEntityHealth(PlayerPedId(), health) 
+    SetEntityHealth(PlayerPedId(), health)
 end)
 
 RegisterNetEvent('atiya-dev:setArmor', function(armor)
-    SetPedArmour(PlayerPedId(), armor) 
+    SetPedArmour(PlayerPedId(), armor)
 end)
 
 RegisterNetEvent('atiya-dev:client:GetCuffed', function(handcuffed)
@@ -776,10 +818,10 @@ function handleHandcuffChange(handcuffed)
     local playerPed = PlayerPedId()
     if handcuffed then
         applyHandcuffAnimation()
-        TriggerEvent('QBCore:Notify', 'You have been handcuffed', 'error')
+        sendNotify('You have been handcuffed', 'error')
     else
         ClearPedTasks(playerPed)
-        TriggerEvent('QBCore:Notify', 'You have been uncuffed', 'success')
+        sendNotify('You have been uncuffed', 'success')
     end
 end
 
@@ -896,7 +938,7 @@ RegisterNetEvent('atiya-dev:startObjectPlacement', function(objectModel)
     local spawnPos = GetEntityCoords(playerPed) + GetEntityForwardVector(playerPed) * 2.0
     local placedObject = CreateObject(objectHash, spawnPos.x, spawnPos.y, spawnPos.z, true, true, true)
     table.insert(placedObjects, placedObject)
-    TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Object Placement', 'primary')
+    sendNotify('View the CONTROLS.MD file to learn the controls under Object Placement', 'primary')
     Citizen.CreateThread(function()
         while objectActive do
             Citizen.Wait(0)
@@ -965,7 +1007,7 @@ RegisterNetEvent('atiya-dev:startPedPlacement', function(pedModel)
     SetPedCanRagdoll(placedPed, false)
     FreezeEntityPosition(placedPed, true)
     table.insert(placedPeds, placedPed)
-    TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Ped Placement', 'primary')
+    sendNotify('View the CONTROLS.MD file to learn the controls under Ped Placement', 'primary')
     Citizen.CreateThread(function()
         while pedActive do
             Citizen.Wait(0)
@@ -993,7 +1035,7 @@ RegisterNetEvent('atiya-dev:startPedPlacement', function(pedModel)
                 SetEntityRotation(placedPed, vector3(0.0, 0.0, GetEntityRotation(placedPed, 2).z - 0.5))
             elseif IsControlPressed(0, 40) then
                 SetEntityRotation(placedPed, vector3(0.0, 0.0, GetEntityRotation(placedPed, 2).z + 0.5))
-            end  
+            end
             SetEntityCoordsNoOffset(placedPed, newCoords.x, newCoords.y, newCoords.z, false, false, true)
             if IsControlJustReleased(0, 38) then
                 local heading = GetEntityHeading(placedPed)
@@ -1066,12 +1108,12 @@ AddEventHandler('atiya-dev:addAttachments', function()
                 print("Adding component:", component)
             end
         end
-        TriggerEvent('QBCore:Notify', 'All attachments added to your weapon.', 'success')
+        sendNotify('All attachments added to your weapon.', 'success')
     else
         if ADC.Config.Debug then
             print("No attachments available for this weapon.")
         end
-        TriggerEvent('QBCore:Notify', 'No attachments available for this weapon.', 'error')
+        sendNotify('No attachments available for this weapon.', 'error')
     end
 end)
 
@@ -1082,14 +1124,14 @@ end)
 
 RegisterNetEvent('atiya-dev:resetped')
 AddEventHandler('atiya-dev:resetped', function()
-    TriggerServerEvent('atiya-dev:resetPed') 
+    TriggerServerEvent('atiya-dev:resetPed')
 end)
 
 RegisterNetEvent('atiya-dev:die')
 AddEventHandler('atiya-dev:die', function()
     local myPed = PlayerPedId()
     SetEntityHealth(myPed, 0)
-    TriggerEvent('QBCore:Notify', 'You have died', 'error') 
+    sendNotify('You have died', 'error')
 end)
 
 RegisterNetEvent('atiya-dev:deleteliveobj')
@@ -1100,7 +1142,7 @@ AddEventHandler('atiya-dev:deleteliveobj', function()
         end
     end
     placedObjects = {}
-    TriggerEvent('QBCore:Notify', 'All objects deleted.', 'success')
+    sendNotify('All objects deleted.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:deleteliveped')
@@ -1111,7 +1153,7 @@ AddEventHandler('atiya-dev:deleteliveped', function()
         end
     end
     placedPeds = {}
-    TriggerEvent('QBCore:Notify', 'All peds deleted.', 'success')
+    sendNotify('All peds deleted.', 'success')
 end)
 
 RegisterNetEvent('atiya-dev:liveped')
@@ -1120,7 +1162,7 @@ AddEventHandler('atiya-dev:liveped', function(args)
     if pedModel then
         TriggerEvent('atiya-dev:startPedPlacement', pedModel)
     else
-        TriggerEvent('QBCore:Notify', 'Usage: ped name', 'error')
+        sendNotify('Usage: ped name', 'error')
     end
 end)
 
@@ -1131,7 +1173,7 @@ AddEventHandler('atiya-dev:tptom', function()
     local GetGroundZFor_3dCoord = GetGroundZFor_3dCoord
     local blipMarker <const> = GetFirstBlipInfoId(8)
     if not DoesBlipExist(blipMarker) then
-        TriggerEvent('QBCore:Notify', 'No waypoint set', 'error', 5000)
+        sendNotify('No waypoint set', 'error', 5000)
         return 'marker'
     end
     local ped, coords <const> = PlayerPedId(), GetBlipInfoIdCoord(blipMarker)
@@ -1181,10 +1223,10 @@ AddEventHandler('atiya-dev:tptom', function()
     end
     if not found then
         SetPedCoordsKeepVehicle(ped, oldCoords['x'], oldCoords['y'], oldCoords['z'] - 1.0)
-        TriggerEvent('QBCore:Notify', 'Could not teleport', 'error', 5000)
+        sendNotify('Could not teleport', 'error', 5000)
     end
     SetPedCoordsKeepVehicle(ped, x, y, groundZ)
-    TriggerEvent('QBCore:Notify','Teleported to waypoint', 'success', 5000)
+    sendNotify('Teleported to waypoint', 'success', 5000)
 end)
 
 RegisterNetEvent('atiya-dev:liveobjedit')
@@ -1208,7 +1250,7 @@ AddEventHandler('atiya-dev:liveobjedit', function(args)
     local rotation = vector3(0.0, 0.0, 0.0)
     local text = string.format('Prop: %s\nBone: %s (%d)', propName, boneName, boneId)
     local text2 = string.format('Offset: %.2f, %.2f, %.2f\nRotation: %.2f, %.2f, %.2f', offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z)
-    TriggerEvent('QBCore:Notify', 'View the CONTROLS.MD file to learn the controls under Bone Placement.', 'primary')
+    sendNotify('View the CONTROLS.MD file to learn the controls under Bone Placement.', 'primary')
     Citizen.CreateThread(function()
         local active = true
         while active do
@@ -1272,18 +1314,18 @@ AddEventHandler('atiya-dev:liveobjedit', function(args)
             DrawTextOnScreen3(text2, 0.9, 0.2, 0.35, 0)
             if IsControlJustReleased(0, 38) then
                 local coordsText = string.format(
-                    'Prop: %s, Hash: %d, Bone: %s (%d), Offset: %.2f, %.2f, %.2f, Rotation: %.2f, %.2f, %.2f', 
-                    propName, 
-                    propHash, 
-                    boneName, 
-                    boneId, 
-                    offset.x, offset.y, offset.z, 
+                    'Prop: %s, Hash: %d, Bone: %s (%d), Offset: %.2f, %.2f, %.2f, Rotation: %.2f, %.2f, %.2f',
+                    propName,
+                    propHash,
+                    boneName,
+                    boneId,
+                    offset.x, offset.y, offset.z,
                     rotation.x, rotation.y, rotation.z
                 )
                 TriggerEvent("atiya-dev:copyToClipboard", coordsText, "vector4")
                 active = false
                 FreezeEntityPosition(prop, true)
-            end            
+            end
         end
         if not active then
             DeleteObject(prop)
