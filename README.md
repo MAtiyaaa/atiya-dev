@@ -7,7 +7,7 @@
 
 * Github: https://github.com/MAtiyaaa
 
-  
+
 
 # Description
 
@@ -15,16 +15,18 @@
 
 *  **Uses commands to trigger multiple features that would make your day-to-day dev life somewhat less annoying.**
 
-*  This was not meant to be a release, as I just made this to make my life a bit easier so some of the code available is probably useless and/or overdoing it
+*  This was not meant to be a release, as I just made this to make my life a bit easier so some of the code available is probably useless and/or overdoing it.
 
-  
+* ESX Support is experimental and may be subject to changes. (check the `fxmanifest.lua` & `config.lua` before using)
+
+
 
 # Preview
 * **Feature**: Developer **menu** with all options available as an alternative to using commands.
-  
+
 ![image](https://i.imgur.com/oygwv4l.png)
 * **Feature**: Live **3D** view of all objects and/or peds around you, highlighted with their information placed under it.
-  
+
 ![image](https://i.imgur.com/KnPIwCU.png)
 * **Feature**: Viewing **live vehicle information**. (turn rate, acceleration, RPM, etc.)
 
@@ -60,9 +62,14 @@
 
 # Installation
 
-* Add `atiya-dev.sql` FROM YOUR [INSTALL] folder
+* Add `atiya-dev-qb.sql` or `atiya-dev-esx` FROM YOUR [INSTALL] folder
 
 # Dependencies
 
 * [QBCore](https://github.com/qbcore-framework)
 * [oxmysql](https://github.com/overextended/oxmysql)
+
+## Required only for ESX support
+
+* [es_extended](https://github.com/esx-framework/esx_core)
+* [ox_lib](https://github.com/overextended/ox_lib)

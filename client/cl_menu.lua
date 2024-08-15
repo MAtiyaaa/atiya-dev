@@ -1,5 +1,8 @@
-QBCore = exports['qb-core']:GetCoreObject()
-local oxmysql = exports.oxmysql
+if not ADC.Config.ESX then
+    QBCore = exports['qb-core']:GetCoreObject()
+else
+    ESX = exports["es_extended"]:getSharedObject()
+end
 
 local Menu = {
     isOpen = false,
@@ -23,20 +26,9 @@ for cmdName, cmdData in pairs(AD.Commands) do
     })
 end
 
-local function GetPlayerFavorites(source)
-    local Player = QBCore.Functions.GetPlayerData(source)
-    local cid = Player.PlayerData.citizenid
-    
-    local result = oxmysql.query_async('SELECT favorites FROM players WHERE citizenid = ?', {cid})
-    if result and result[1] and result[1].favorites then
-        return json.decode(result[1].favorites)
-    end
-    return {}
-end
-
 function OpenMenu()
     Menu.isOpen = true
-    TriggerServerEvent('atiya-dev:loadFavorites') 
+    TriggerServerEvent('atiya-dev:loadFavorites')
     SendNUIMessage({
         action = "openMenu",
         commands = Menu.commands,
@@ -71,7 +63,22 @@ RegisterNUICallback('executeCommand', function(data, cb)
     if AD.Commands[cmdName] and AD.Commands[cmdName].enabled then
         ExecuteCommand(AD.Commands[cmdName].name .. " " .. table.concat(params, " "))
     else
-        QBCore.Functions.Notify("Command not found or disabled", "error")
+        if ADC.Config.ESX then
+            lib.notify({
+                title = "Command not found or disabled",
+                type = 'error'
+            })
+            cb('ok')
+            return
+        end
+        if not ADC.Config.ESX then
+            QBCore.Functions.Notify("Command not found or disabled", "error")
+        else
+            lib.notify({
+                title = "Command not found or disabled",
+                type = 'error'
+            })
+        end
     end
     cb('ok')
 end)
@@ -87,7 +94,14 @@ RegisterNUICallback('toggleCommand', function(data, cb)
             ExecuteCommand(AD.Commands[cmdName].name)
         end
     else
-        QBCore.Functions.Notify("Command not found", "error")
+        if not ADC.Config.ESX then
+            QBCore.Functions.Notify("Command not found", "error")
+        else
+            lib.notify({
+                title = "Command not found",
+                type = 'error'
+            })
+        end
     end
     cb('ok')
 end)
