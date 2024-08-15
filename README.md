@@ -19,7 +19,7 @@
 
 *  ESX Support is experimental and may be subject to changes. (check the `fxmanifest.lua` & `config.lua` before using)
 
-*  ESX Support by `PegosStelios`
+*  ESX Support by [PegosStelios](https://github.com/PegosStelios)
 
 
 
