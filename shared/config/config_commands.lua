@@ -745,6 +745,18 @@ AD.Commands = {
         mode = "toggle",
         icon = "fas fa-tools"
     },
+        cid = {
+        enabled = true,
+        category = "player",
+        title = "Copy Citizen ID",
+        name = "cid",
+        usage = "/cid [ID]",
+        description = "Grab & copy player's CitizenID (CID) to clipboard.",
+        parameters = {
+            {name="id", help="Player ID", type = "text"}
+        },
+        icon = "fas fa-id-card-clip"
+    },
 }
 
 return AD
