@@ -920,3 +920,24 @@ if AD.Commands.liveobjedit.enabled == true then
         -- nothing yet
     end
 end
+
+if AD.Commands.cid.enabled == true then
+    if not ADC.Config.ESX then
+        QBCore.Commands.Add(AD.Commands.cid.name, AD.Commands.cid.description, AD.Commands.cid.parameters, false, function(source, args)
+            local targetId = tonumber(args[1])
+            if targetId then
+                local targetPlayer = QBCore.Functions.GetPlayer(targetId)
+                if targetPlayer then
+                    local cid = targetPlayer.PlayerData.citizenid
+                    TriggerClientEvent("atiya-dev:copyToClipboard", source, cid)
+                else
+                    TriggerClientEvent('QBCore:Notify', source, "Player not found", "error")
+                end
+            else
+                TriggerClientEvent('QBCore:Notify', source, "Invalid player ID", "error")
+            end
+        end)
+    else
+        -- nothing yet
+    end
+end
