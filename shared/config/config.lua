@@ -1,7 +1,8 @@
 ADC = {}
 ADC.Config = {
-    Debug = true,
+    ESX = false, -- To enable esx usage, make this true.
+    Debug = false,
     Fuel = 'ps-fuel',
     Jail = 'qb-jail',
-    ESX = false, -- To enable esx usage, make this true.
+    Skin = 'illenium-appearance',
 }
