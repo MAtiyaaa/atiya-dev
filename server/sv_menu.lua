@@ -1,5 +1,9 @@
-QBCore = exports['qb-core']:GetCoreObject()
-if ADC.Config.ESX then ESX = exports["es_extended"]:getSharedObject() end
+if ADC.Config.ESX then 
+    ESX = exports["es_extended"]:getSharedObject() 
+else
+    QBCore = exports['qb-core']:GetCoreObject()
+end
+
 
 local function GetPlayerFavorites(source)
     if not ADC.Config.ESX then
@@ -28,6 +32,8 @@ local function GetPlayerFavorites(source)
             if type(decoded) == "table" then
                 return decoded
             end
+        else
+            print("Failed to load favorites, did you install the SQL?")
         end
         return {}
     end
