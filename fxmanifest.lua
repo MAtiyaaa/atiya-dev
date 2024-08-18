@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'Atiya'
 description 'Atiya Developer Tools'
-version '1.0.1'
+version '1.0.3'
 
 client_scripts {
     'client/*.lua',
@@ -15,7 +15,7 @@ server_scripts {
 }
 
 shared_scripts {
-    -- '@ox_lib/init.lua', -- uncomment to enable esx
+    '@ox_lib/init.lua', -- ONLY NEEDED FOR ESX. UNCOMMENT IF USING QBCORE, YOU DON'T HAVE TO THOUGH
     'shared/*.lua',
     'shared/db/*.lua',
     'shared/config/config_commands.lua',
@@ -33,9 +33,7 @@ files {
 ui_page 'html/index.html'
 
 dependencies {
-    'qb-core', -- comment to enable esx
-    -- 'es_extended', -- uncomment to enable esx
-    -- 'ox_lib' -- uncomment to enable esx
+    'oxmysql'
 }
 
 lua54 'yes'
