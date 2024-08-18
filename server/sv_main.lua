@@ -1,5 +1,8 @@
-QBCore = exports['qb-core']:GetCoreObject()
-if ADC.Config.ESX then ESX = exports["es_extended"]:getSharedObject() end
+if ADC.Config.ESX then 
+    ESX = exports["es_extended"]:getSharedObject() 
+else
+    QBCore = exports['qb-core']:GetCoreObject()
+end
 
 local effects = LoadResourceFile(GetCurrentResourceName(), 'shared/db/effects.lua')
 effects = load(effects)()
@@ -14,7 +17,10 @@ RegisterNetEvent('hud:server:SetPlayerStress', function(targetPlayerId, desiredS
         TriggerClientEvent('hud:client:UpdateStress', targetPlayerId, desiredStress)
         TriggerClientEvent('QBCore:Notify', targetPlayerId, ('Your stress level is now %d'):format(desiredStress), 'success')
     else
-        -- nothing
+        TriggerClientEvent('ox_lib:notify', Player.source, {
+            title = ('ESX does not have stress.'):format(identifierType),
+            type = 'error'
+        })
     end
 end)
 
@@ -70,9 +76,9 @@ AddEventHandler('atiya-dev:resetPed', function()
         local src = source
         local player = QBCore.Functions.GetPlayer(src)
         player.PlayerData.charinfo = {}
-        TriggerClientEvent('illenium-appearance:client:reloadSkin', src)
+        exports[ADC.Config.Skin]:reloadSkin(src)
     else
-        TriggerClientEvent('illenium-appearance:client:reloadSkin', source)
+        exports[ADC.Config.Skin]:reloadSkin(src)
     end
 end)
 
@@ -86,6 +92,13 @@ RegisterNetEvent('atiya-dev:server:HandcuffPlayer', function(targetId)
             TriggerClientEvent('atiya-dev:client:GetCuffed', Target.PlayerData.source, not isCuffed)
         end
     else
-        -- nothing yet
+        local xPlayer = ESX.GetPlayerFromId(source)
+        local xTarget = ESX.GetPlayerFromId(targetId)
+        if xTarget then
+            TriggerClientEvent('atiya-dev:client:GetCuffed', xTarget.source, not xTarget.get('cuffed'))
+            xTarget.set('cuffed', not xTarget.get('cuffed'))
+        else
+            xPlayer.showNotification('Player not found.')
+        end
     end
 end)
