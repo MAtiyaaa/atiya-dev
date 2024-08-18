@@ -113,6 +113,7 @@ RegisterNetEvent('atiya-dev:freezePlayer', function(state)
 end)
 
 RegisterNetEvent('atiya-dev:spawnObject', function(objectName)
+    print("Client received spawnObject event with object name: " .. objectName)
     local playerPed = PlayerPedId()
     local forwardVector = GetEntityForwardVector(playerPed)
     local playerCoords = GetEntityCoords(playerPed)
@@ -129,6 +130,79 @@ RegisterNetEvent('atiya-dev:spawnObject', function(objectName)
     PlaceObjectOnGroundProperly(object)
     SetModelAsNoLongerNeeded(objectHash)
     sendNotify(('Spawned object %s'):format(objectName), 'success')
+end)
+
+RegisterNetEvent('atiya-dev:esxspawnObject')
+AddEventHandler('atiya-dev:esxspawnObject', function(objectName)
+    if ADC.Config.Debug then
+        print("Client received spawnObject event with object name: " .. tostring(objectName))
+    end 
+    local playerPed = PlayerPedId()
+    local forwardVector = GetEntityForwardVector(playerPed)
+    local playerCoords = GetEntityCoords(playerPed)
+    local spawnOffset = 3.0
+    local spawnCoords = playerCoords + forwardVector * spawnOffset
+    spawnCoords = vector3(spawnCoords.x, spawnCoords.y, spawnCoords.z + 1.0)
+    if ADC.Config.Debug then
+        print("Calculated spawn coordinates: " .. tostring(spawnCoords))
+    end
+    local objectHash
+    if type(objectName) == "number" then
+        objectHash = objectName
+    else
+        objectHash = GetHashKey(objectName)
+    end
+    if ADC.Config.Debug then
+        print("Object hash: " .. objectHash)
+    end
+    if not IsModelValid(objectHash) then
+        if ADC.Config.Debug then
+            print("Error: Invalid model hash for " .. tostring(objectName))
+            print("Attempting to spawn a default object (prop_barrel_01a) for testing")
+        end
+        objectHash = GetHashKey("prop_barrel_01a")
+        if not IsModelValid(objectHash) then
+            if ADC.Config.Debug then
+                print("Error: Even default object is invalid. Possible game file issue.")
+            end
+            ESX.ShowNotification("Error: Invalid object model")
+            return
+        end
+    end
+    RequestModel(objectHash)
+    if ADC.Config.Debug then
+        print("Requested model")
+    end
+    local timeoutCounter = 0
+    while not HasModelLoaded(objectHash) do
+        Citizen.Wait(10)
+        timeoutCounter = timeoutCounter + 1
+        if timeoutCounter > 500 then
+            if ADC.Config.Debug then
+                print("Error: Model load timeout")
+            end
+            ESX.ShowNotification("Error: Failed to load object model")
+            return
+        end
+    end
+    if ADC.Config.Debug then
+        print("Model loaded successfully")
+    end
+    local object = CreateObject(objectHash, spawnCoords.x, spawnCoords.y, spawnCoords.z, true, false, false)
+    if DoesEntityExist(object) then
+        if ADC.Config.Debug then
+            print("Object spawned successfully with handle: " .. object)
+        end
+        SetEntityHeading(object, GetEntityHeading(playerPed))
+        PlaceObjectOnGroundProperly(object)
+        SetModelAsNoLongerNeeded(objectHash)
+        ESX.ShowNotification(('Spawned object %s'):format(tostring(objectName)))
+    else
+        if ADC.Config.Debug then
+            print("Error: Failed to create object")
+        end
+        ESX.ShowNotification("Error: Failed to spawn object")
+    end
 end)
 
 RegisterNetEvent('atiya-dev:deleteNearbyObject', function(objectName)
@@ -500,21 +574,24 @@ RegisterNetEvent('atiya-dev:toggleDevInfo', function()
                 local playerHealth = GetEntityHealth(playerPed)
                 local playerArmor = GetPedArmour(playerPed)
                 local player = nil
-                local stress = nil
                 if not ADC.Config.ESX then
+                    local stress = nil
                     player = QBCore.Functions.GetPlayerData()
                     stress = player.metadata and player.metadata['stress'] or 0
                 else
-                    -- nothing since there is no stress in esx
+                    player = ESX.GetPlayerData()
                 end
-
                 local vehicle = GetVehiclePedIsIn(playerPed, false)
                 local vehicleColumn1 = ""
                 local vehicleColumn2 = ""
                 if vehicle ~= 0 then
                     local engineHealth = GetVehicleEngineHealth(vehicle)
                     local bodyHealth = GetVehicleBodyHealth(vehicle)
-                    local fuelLevel = exports[ADC.Config.Fuel]:GetFuel(vehicle)
+                    if not ADC.Config.ESX then
+                        local fuelLevel = exports[ADC.Config.Fuel]:GetFuel(vehicle)
+                    else
+                        local fuelLevel = exports[ADC.Config.Fuel]:GetFuel(vehicle) or GetVehicleFuelLevel(vehicle) or 0
+                    end
                     local currentSpeed = GetEntitySpeed(vehicle)
                     local turnRate = GetVehicleSteeringAngle(vehicle)
                     local rpm = GetVehicleCurrentRpm(vehicle)
@@ -522,19 +599,30 @@ RegisterNetEvent('atiya-dev:toggleDevInfo', function()
                     lastSpeed = currentSpeed
                     local turnStrength = math.abs(turnRate - lastTurn)
                     lastTurn = turnRate
-                    vehicleColumn1 = string.format(
-                        'Engine Health: %.1f\nBody Health: %.1f\nFuel Level: %.1f\nSpeed: %.2f mph',
-                        engineHealth, bodyHealth, fuelLevel, (currentSpeed * 3.6) / 1.609
-                    )
-                    vehicleColumn2 = string.format(
-                        'Turn Rate: %.2f\nTurn Strength: %.2f\nAcceleration: %.2f\nRPM: %.2f',
-                        turnRate, turnStrength, acceleration, rpm
-                    )
+                    if not ADC.Config.ESX then
+                        vehicleColumn1 = string.format(
+                            'Engine Health: %.1f\nBody Health: %.1f\nFuel Level: %.1f\nSpeed: %.2f mph',
+                            engineHealth, bodyHealth, fuelLevel, (currentSpeed * 3.6) / 1.609
+                        )
+                        vehicleColumn2 = string.format(
+                            'Turn Rate: %.2f\nTurn Strength: %.2f\nAcceleration: %.2f\nRPM: %.2f',
+                            turnRate, turnStrength, acceleration, rpm
+                        )
+                    else
+                        vehicleColumn1 = string.format(
+                            'Engine Health: %.1f\nBody Health: %.1f\nSpeed: %.2f mph',
+                            engineHealth, bodyHealth, (currentSpeed * 3.6) / 1.609
+                        )
+                        vehicleColumn2 = string.format(
+                            'Turn Rate: %.2f\nTurn Strength: %.2f\nAcceleration: %.2f\nRPM: %.2f',
+                            turnRate, turnStrength, acceleration, rpm
+                        )
+                    end
                 end
                 local heading = GetEntityHeading(playerPed)
                 local coordsText = string.format('vector4(%.2f, %.2f, %.2f, %.2f)', playerCoords.x, playerCoords.y, playerCoords.z, heading)
 
-                if stress ~= nil then -- if it is nill it means esx is active
+                if not ADC.Config.ESX then
                     local devInfo = string.format('Health: %d\nArmor: %d\nStress: %.1f', playerHealth, playerArmor, stress)
                 else
                     local devInfo = string.format('Health: %d\nArmor: %d', playerHealth, playerArmor)
@@ -583,7 +671,11 @@ RegisterNetEvent('atiya-dev:repairAndRefuelVehicle', function()
         SetVehicleFixed(vehicle)
         SetVehicleEngineHealth(vehicle, 1000.0)
         SetVehicleBodyHealth(vehicle, 1000.0)
-        exports[ADC.Config.Fuel]:SetFuel(vehicle, 100)
+        if not ADC.Config.ESX then
+            exports[ADC.Config.Fuel]:SetFuel(vehicle, 100)
+        else
+            exports[ADC.Config.Fuel]:SetFuel(vehicle, 100)
+        end
         sendNotify('Vehicle repaired and refueled.', 'success')
     else
         sendNotify('Not in a vehicle.', 'error')
