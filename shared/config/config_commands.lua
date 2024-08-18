@@ -41,7 +41,7 @@ AD.Commands = {
         usage = "/who [player ID]",
         description = "Check info about another player.",
         parameters = {
-            {name = "id", help = "Player ID", type = "text"}
+            {name = "playerId", help = "Player ID", type = "number"}
         },
         icon = "fas fa-question-circle"
     },
@@ -87,7 +87,7 @@ AD.Commands = {
         usage = "/jaila [player ID] [time]",
         description = "Jail a player for a specified time.",
         parameters = {
-            {name = "playerId", help = "ID of the player to jail", type = "text"},
+            {name = "playerId", help = "ID of the player to jail", type = "number"},
             {name = "time", help = "Time to jail the player in minutes", type = "text"}
         },
         icon = "fas fa-lock"
@@ -100,7 +100,7 @@ AD.Commands = {
         usage = "/unjaila [player ID]",
         description = "Release a player from jail.",
         parameters = {
-            {name = "playerId", help = "ID of the player to release", type = "text"}
+            {name = "playerId", help = "ID of the player to release", type = "number"}
         },
         icon = "fas fa-unlock"
     },
@@ -123,7 +123,7 @@ AD.Commands = {
         usage = "/inva [player ID]",
         description = "Toggle invisibility for a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"}
         },
         icon = "fas fa-eye-slash"
     },
@@ -147,7 +147,7 @@ AD.Commands = {
         usage = "/ammoa [player ID]",
         description = "Give infinite ammo to a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"}
         },
         icon = "fas fa-bullseye"
     },
@@ -159,7 +159,7 @@ AD.Commands = {
         usage = "/freezea [player ID]",
         description = "Freeze a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"}
         },
         icon = "fas fa-snowflake"
     },
@@ -171,7 +171,7 @@ AD.Commands = {
         usage = "/unfreezea [player ID]",
         description = "Unfreeze a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"}
         },
         icon = "fas fa-fire-alt"
     },
@@ -207,7 +207,7 @@ AD.Commands = {
         usage = "/objdra [radius]",
         description = "Delete objects within a radius.",
         parameters = {
-            {name = "radius", help = "Radius in which to delete objects", type = "text"}
+            {name = "radius", help = "Radius in which to delete objects", type = "number"}
         },
         icon = "fas fa-recycle"
     },
@@ -230,7 +230,7 @@ AD.Commands = {
         usage = "/dvra [radius]",
         description = "Delete vehicles within a radius.",
         parameters = {
-            {name = "radius", help = "Radius in which to delete vehicles", type = "text"}
+            {name = "radius", help = "Radius in which to delete vehicles", type = "number"}
         },
         icon = "fas fa-ban"
     },
@@ -275,8 +275,8 @@ AD.Commands = {
         usage = "/stressa [player ID] [stress level]",
         description = "Set the stress level of a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "stressLevel", help = "Stress level (0-100)", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "stressLevel", help = "Stress level (0-100)", type = "number"}
         },
         icon = "fas fa-tachometer-alt"
     },
@@ -288,7 +288,7 @@ AD.Commands = {
         usage = "/identa [player ID] [identifier type]",
         description = "Retrieve a player's identifier (steam, rockstar, discord, fivem).",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
+            {name = "playerId", help = "ID of the player", type = "number"},
             {name = "identifierType", help = "Identifier type", type = "dropdown2", dd2actions = "Steam,Rockstar,Discord,FiveM"}
         },
         icon = "fas fa-id-badge"
@@ -368,7 +368,7 @@ AD.Commands = {
         usage = "/effecta [player ID] [effect name or number]",
         description = "Apply a screen effect to a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
+            {name = "playerId", help = "ID of the player", type = "number"},
             {name = "effect", help = "Effect name or number (1-70)", type = "dropdown2", dd2actions = "BeastIntroScene,BeastLaunch,BeastTransition,BikerFilter,BikerFilterOut,BikerFormation,BikerFormationOut,CamPushInFranklin,CamPushInMichael,CamPushInNeutral,CamPushInTrevor,ChopVision,CrossLine,CrossLineOut,DeadlineNeon,DeathFailFranklinIn,DeathFailMichaelIn,DeathFailMPDark,DeathFailMPIn,DeathFailNeutralIn,DeathFailOut,DeathFailTrevorIn,DefaultFlash,DMT_flight,DMT_flight_intro,Dont_tazeme_bro,DrugsDrivingIn,DrugsDrivingOut,DrugsMichaelAliensFight,DrugsMichaelAliensFightIn,DrugsMichaelAliensFightOut,DrugsTrevorClownsFight,DrugsTrevorClownsFightIn,DrugsTrevorClownsFightOut,ExplosionJosh3,FocusIn,FocusOut,HeistCelebEnd,HeistCelebPass,HeistCelebPassBW,HeistCelebToast,HeistLocate,HeistTripSkipFade,InchOrange,InchOrangeOut,InchPickup,InchPickupOut,InchPurple,InchPurpleOut,LostTimeDay,LostTimeNight,MenuMGHeistIn,MenuMGHeistIntro,MenuMGHeistOut,MenuMGHeistTint,MenuMGIn,MenuMGSelectionIn,MenuMGSelectionTint,MenuMGTournamentIn,MenuMGTournamentTint,MinigameEndFranklin,MinigameEndMichael,MinigameEndNeutral,MinigameEndTrevor,MinigameTransitionIn,MinigameTransitionOut,MP_Bull_tost,MP_Bull_tost_Out,MP_Celeb_Lose,MP_Celeb_Lose_Out,MP_Celeb_Preload,MP_Celeb_Preload_Fade,MP_Celeb_Win,MP_Celeb_Win_Out,MP_corona_switch,MP_intro_logo,MP_job_load,MP_Killstreak,MP_Killstreak_Out,MP_Loser_Streak_Out,MP_OrbitalCannon,MP_Powerplay,MP_Powerplay_Out,MP_race_crash,MP_SmugglerCheckpoint,MP_TransformRaceFlash,MP_WarpCheckpoint,PauseMenuOut,pennedIn,PennedInOut,PeyoteEndIn,PeyoteEndOut,PeyoteIn,PeyoteOut,PPFilter,PPFilterOut,PPGreen,PPGreenOut,PPOrange,PPOrangeOut,PPPink,PPPinkOut,PPPurple,PPPurpleOut,RaceTurbo,Rampage,RampageOut,SniperOverlay,SuccessFranklin,SuccessMichael,SuccessNeutral,SuccessTrevor,switch_cam_1,switch_cam_2,SwitchHUDFranklinIn,SwitchHUDFranklinOut,SwitchHUDIn,SwitchHUDMichaelIn,SwitchHUDMichaelOut,SwitchHUDOut,SwitchHUDTrevorIn,SwitchHUDTrevorOut,SwitchOpenFranklin,SwitchOpenFranklinIn,SwitchOpenFranklinOut,SwitchOpenMichaelIn,SwitchOpenMichaelMid,SwitchOpenMichaelOut,SwitchOpenNeutralFIB5,SwitchOpenNeutralOutHeist,SwitchOpenTrevorIn,SwitchOpenTrevorOut,SwitchSceneFranklin,SwitchSceneMichael,SwitchSceneNeutral,SwitchSceneTrevor,SwitchShortFranklinIn,SwitchShortFranklinMid,SwitchShortMichaelIn,SwitchShortMichaelMid,SwitchShortNeutralIn,SwitchShortNeutralMid,SwitchShortTrevorIn,SwitchShortTrevorMid,TinyRacerGreen,TinyRacerGreenOut,TinyRacerIntroCam,TinyRacerPink,TinyRacerPinkOut,WeaponUpgrade"}
         },
         icon = "fas fa-magic"
@@ -381,7 +381,7 @@ AD.Commands = {
         usage = "/liva [livery number]",
         description = "Apply a livery to the current vehicle.",
         parameters = {
-            {name = "liveryNumber", help = "Livery number", type = "text"}
+            {name = "liveryNumber", help = "Livery number", type = "number"}
         },
         icon = "fas fa-paint-brush"
     },
@@ -393,7 +393,7 @@ AD.Commands = {
         usage = "/vspeeda [speed multiplier]",
         description = "Adjust the speed of the current vehicle.",
         parameters = {
-            {name = "multiplier", help = "Speed multiplier (0.1-100.0)", type = "text"}
+            {name = "multiplier", help = "Speed multiplier (0.1-100.0)", type = "numberd"}
         },
         icon = "fas fa-tachometer-alt"
     },
@@ -405,7 +405,7 @@ AD.Commands = {
         usage = "/pspeeda [speed multiplier]",
         description = "Adjust the speed of the current ped.",
         parameters = {
-            {name = "multiplier", help = "Speed multiplier (0.1-100.0)", type = "text"}
+            {name = "multiplier", help = "Speed multiplier (0.1-100.0)", type = "numberd"}
         },
         icon = "fas fa-running"
     },
@@ -469,7 +469,7 @@ AD.Commands = {
         usage = "/pclearra [radius]",
         description = "Clear peds within a specified radius.",
         parameters = {
-            {name = "radius", help = "Radius in which to clear peds", type = "text"}
+            {name = "radius", help = "Radius in which to clear peds", type = "numberd"}
         },
         icon = "fas fa-circle-notch"
     },
@@ -481,8 +481,8 @@ AD.Commands = {
         usage = "/settime [hours 0-23] [minutes 0-59]",
         description = "Set the in-game time.",
         parameters = {
-            {name = "hours", help = "Hours (0-23)", type = "text"},
-            {name = "minutes", help = "Minutes (0-59)", type = "text"}
+            {name = "hours", help = "Hours (0-23)", type = "number"},
+            {name = "minutes", help = "Minutes (0-59)", type = "number"}
         },
         icon = "fas fa-clock"
     },
@@ -506,8 +506,8 @@ AD.Commands = {
         usage = "/sethealth [player ID] [health amount]",
         description = "Set a player's health.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "healthAmount", help = "Health amount (0-200)", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "healthAmount", help = "Health amount (0-200)", type = "number"}
         },
         icon = "fas fa-heartbeat"
     },
@@ -519,8 +519,8 @@ AD.Commands = {
         usage = "/setarmor [player ID] [armor amount]",
         description = "Set a player's armor.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "armorAmount", help = "Armor amount (0-100)", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "armorAmount", help = "Armor amount (0-100)", type = "number"}
         },
         icon = "fas fa-shield-alt"
     },
@@ -532,8 +532,8 @@ AD.Commands = {
         usage = "/setstress [player ID] [stress level]",
         description = "Set a player's stress level.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "stressLevel", help = "Stress level (0-100)", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "stressLevel", help = "Stress level (0-100)", type = "number"}
         },
         icon = "fas fa-heartbeat"
     },
@@ -545,7 +545,7 @@ AD.Commands = {
         usage = "/sethunger [hunger level]",
         description = "Set your hunger level.",
         parameters = {
-            {name = "hungerLevel", help = "Hunger level (0-100)", type = "text"}
+            {name = "hungerLevel", help = "Hunger level (0-100)", type = "number"}
         },
         icon = "fas fa-hamburger"
     },
@@ -557,7 +557,7 @@ AD.Commands = {
         usage = "/setthirst [thirst level]",
         description = "Set your thirst level.",
         parameters = {
-            {name = "thirstLevel", help = "Thirst level (0-100)", type = "text"}
+            {name = "thirstLevel", help = "Thirst level (0-100)", type = "umber"}
         },
         icon = "fas fa-tint"
     },
@@ -569,9 +569,9 @@ AD.Commands = {
         usage = "/giveitema [player ID] [item name] [amount]",
         description = "Give an item to a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
+            {name = "playerId", help = "ID of the player", type = "number"},
             {name = "itemName", help = "Name of the item", type = "text"},
-            {name = "amount", help = "Amount of the item (default: 1)", type = "text"}
+            {name = "amount", help = "Amount of the item (default: 1)", type = "number"}
         },
         icon = "fas fa-gift"
     },
@@ -583,9 +583,9 @@ AD.Commands = {
         usage = "/setjoba [player ID] [job name] [grade]",
         description = "Set a player's job.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
+            {name = "playerId", help = "ID of the player", type = "number"},
             {name = "jobName", help = "Name of the job", type = "text"},
-            {name = "grade", help = "Job grade (default: 0)", type = "text"}
+            {name = "grade", help = "Job grade (default: 0)", type = "number"}
         },
         icon = "fas fa-briefcase"
     },
@@ -597,11 +597,11 @@ AD.Commands = {
         usage = "/tpto [player ID] [x] [y] [z] [heading]",
         description = "Teleport a player to specific coordinates.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "x", help = "X coordinate", type = "text"},
-            {name = "y", help = "Y coordinate", type = "text"},
-            {name = "z", help = "Z coordinate", type = "text"},
-            {name = "heading", help = "Heading (optional)", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "x", help = "X coordinate", type = "number"},
+            {name = "y", help = "Y coordinate", type = "number"},
+            {name = "z", help = "Z coordinate", type = "number"},
+            {name = "heading", help = "Heading (optional)", type = "number"}
         },
         icon = "fas fa-location-arrow"
     },
@@ -613,8 +613,8 @@ AD.Commands = {
         usage = "/tptop [player ID] [target player ID]",
         description = "Teleport a player to another player.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "targetPlayerId", help = "ID of the target player", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "targetPlayerId", help = "ID of the target player", type = "number"}
         },
         icon = "fas fa-exchange-alt"
     },
@@ -637,8 +637,8 @@ AD.Commands = {
         usage = "/bringa [player ID] [target player ID]",
         description = "Teleport a player to another player's location.",
         parameters = {
-            {name = "playerId", help = "ID of the player", type = "text"},
-            {name = "targetPlayerId", help = "ID of the target player", type = "text"}
+            {name = "playerId", help = "ID of the player", type = "number"},
+            {name = "targetPlayerId", help = "ID of the target player", type = "number"}
         },
         icon = "fas fa-user-friends"
     },
@@ -661,7 +661,7 @@ AD.Commands = {
         usage = "/liveobj [object name]",
         description = "Start placing an object in the game world and control it's location.",
         parameters = {
-            {name = "objectName", help = "Name or hash of the object"}
+            {name = "objectName", help = "Name or hash of the object", type = "dropdown1", source = "items"}
         },
         icon = "fas fa-cube"
     },
@@ -708,7 +708,7 @@ AD.Commands = {
         usage = "/handcuff [player ID]",
         description = "Handcuff a player.",
         parameters = {
-            {name = "playerId", help = "ID of the player to handcuff", type = "text"}
+            {name = "playerId", help = "ID of the player to handcuff", type = "number"}
         },
         icon = "fas fa-handcuffs"
     },
@@ -745,15 +745,15 @@ AD.Commands = {
         mode = "toggle",
         icon = "fas fa-tools"
     },
-        cid = {
+    cid = {
         enabled = true,
         category = "player",
         title = "Copy Citizen ID",
         name = "cid",
         usage = "/cid [ID]",
-        description = "Grab & copy player's CitizenID (CID) to clipboard.",
+        description = "Grab & copy player's CitizenID (CID) to clipboard. [QBCore Only]",
         parameters = {
-            {name="id", help="Player ID", type = "text"}
+            {name="playerId", help="Player ID", type = "number"}
         },
         icon = "fas fa-id-card-clip"
     },
