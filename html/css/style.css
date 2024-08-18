@@ -228,6 +228,36 @@ input[type="text"] {
     margin-top: 5px;
 }
 
+input[type="number"] {
+    width: 95%;
+    padding: 8px;
+    border: none;
+    background: #313131;
+    color: #ffffff;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.light-mode input[type="number"] {
+    background: #c6c6c6;
+    color: #000000;
+}
+
+input[type="numberd"] {
+    width: 95%;
+    padding: 8px;
+    border: none;
+    background: #313131;
+    color: #ffffff;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.light-mode input[type="numberd"] {
+    background: #c6c6c6;
+    color: #000000;
+}
+
 .light-mode input[type="text"] {
     background: #c6c6c6;
     color: #000000;
