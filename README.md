@@ -17,9 +17,9 @@
 
 *  This was not meant to be a release, as I just made this to make my life a bit easier so some of the code available is probably useless and/or overdoing it.
 
-*  ESX Support is experimental and may be subject to changes. (check the `fxmanifest.lua` & `config.lua` before using)
+*  ESX Support has recently been added and thus is experimental and subject to changes.
 
-*  ESX Support by [PegosStelios](https://github.com/PegosStelios)
+*  ESX Support by myself & [PegosStelios](https://github.com/PegosStelios)
 
 
 
