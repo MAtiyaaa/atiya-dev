@@ -60,6 +60,8 @@ function renderMenu(filteredCommands = commands) {
     });
     initParameterFocus();
     $('.searchable-dropdown').select2();
+    initializeSelect2();
+
 }
 
 function fetchJSONData(filename) {
@@ -322,6 +324,12 @@ function renderParameter(cmdName, param) {
         case 'dropdown2':
             paramElement = renderSimpleDropdown(cmdName, param);
             break;
+        case 'number':
+            paramElement = `<input type="number" id="params-${cmdName}-${param.name}" placeholder="Enter a number..." min="0" step="1">`;
+            break;
+        case 'numberd':
+            paramElement = `<input type="numberd" id="params-${cmdName}-${param.name}" placeholder="Enter a number..." min="0" step="any">`;
+            break;
         case 'text':
         default:
             paramElement = `<input type="text" id="params-${cmdName}-${param.name}" placeholder="Type something...">`;
@@ -338,29 +346,39 @@ function renderParameter(cmdName, param) {
 
 function renderSearchableDropdown(cmdName, param) {
     let options = [];
+    let selectHtml = '';
 
     if (param.source === 'bones') {
         options = bonesList.map(bone => ({
             id: bone.BoneId,
             text: `${bone.BoneName} (${bone.BoneId})`
         }));
-    } else if (param.source === 'items') {
-        options = itemsList.map(item => ({
-            id: item.ModNam,
-            text: `${item.ModNam} (${item.HashIs})`
-        }));
+        selectHtml = `
+            <select id="params-${cmdName}-${param.name}" class="searchable-dropdown">
+                <option value="">Select an Option</option>
+                ${options.map(option => `<option value="${option.id}">${option.text}</option>`).join('')}
+            </select>
+        `;
     } else if (param.source === 'peds') {
         options = pedsList.map(ped => ({
             id: ped.Name,
             text: `${ped.Title} (${ped.Name})`
         }));
-    } 
-    return `
-        <select id="params-${cmdName}-${param.name}" class="searchable-dropdown">
-            <option value="">Select an Option</option>
-            ${options.slice(0, 1000).map(option => `<option value="${option.id}">${option.text}</option>`).join('')}
-        </select>
-    `;
+        selectHtml = `
+            <select id="params-${cmdName}-${param.name}" class="searchable-dropdown">
+                <option value="">Select an Option</option>
+                ${options.map(option => `<option value="${option.id}">${option.text}</option>`).join('')}
+            </select>
+        `;
+    } else if (param.source === 'items') {
+        selectHtml = `
+            <select id="params-${cmdName}-${param.name}" class="searchable-dropdown-items" data-source="items">
+                <option value="">Select an Option</option>
+            </select>
+        `;
+    }
+
+    return selectHtml;
 }
 
 function renderSimpleDropdown(cmdName, param) {
@@ -374,46 +392,51 @@ function renderSimpleDropdown(cmdName, param) {
 }
 
 function initializeSelect2() {
-    $('.searchable-dropdown').each(function() {
-        const $select = $(this);
-        const dataSource = $select.data('source');
-        
-        $select.select2({
-            placeholder: 'Select an option',
-            allowClear: true,
-            width: '100%',
-            ajax: {
-                transport: function(params, success, failure) {
-                    let data = [];
+    $('.searchable-dropdown').select2({
+        placeholder: 'Select an option',
+        allowClear: true,
+        width: '100%'
+    });
+
+    $('.searchable-dropdown-items').select2({
+        placeholder: 'Select an item',
+        allowClear: true,
+        width: '100%',
+        data: function() {
+            return {
+                results: itemsList.slice(0, 1000).map(item => ({
+                    id: item.ModNam,
+                    text: `${item.ModNam} (${item.HashIs})`
+                }))
+            };
+        },
+        ajax: {
+            transport: function(params, success, failure) {
+                const results = itemsList.filter(item => {
                     const searchTerm = params.data.term ? params.data.term.toLowerCase() : '';
-                    
-                    if (dataSource === 'bones') {
-                        data = filterAndMapData(bonesList, searchTerm, 'BoneName', 'BoneId');
-                    } else if (dataSource === 'items') {
-                        data = filterAndMapData(itemsList, searchTerm, 'ModNam', 'HashIs');
-                    } else if (dataSource === 'peds') {
-                        data = filterAndMapData(pedsList, searchTerm, 'Name', 'Title');
-                    }
-                    success({ results: data });
-                },
-                processResults: function(data) {
-                    return {
-                        results: data.results
-                    };
-                }
+                    const itemText = `${item.ModNam} (${item.HashIs})`.toLowerCase();
+                    return itemText.includes(searchTerm);
+                }).map(item => ({
+                    id: item.ModNam,
+                    text: `${item.ModNam} (${item.HashIs})`
+                }));
+                success({ results: results.slice(0, 355) });
             },
-            minimumInputLength: 1
-        });
+            delay: 250,
+            cache: true
+        },
+        minimumInputLength: 1
     });
 }
 
 function filterAndMapData(list, searchTerm, textKey, valueKey) {
     return list.filter(item => {
-        const text = valueKey ? `${item[textKey]} (${item[valueKey]})` : item;
+        const text = `${item[textKey]} (${item[valueKey]})`;
         return text.toLowerCase().includes(searchTerm);
     }).slice(0, 100).map(item => {
-        const text = valueKey ? `${item[textKey]} (${item[valueKey]})` : item;
-        const value = valueKey ? item[valueKey] : item;
-        return { id: value, text: text };
+        return { 
+            id: item[valueKey], 
+            text: `${item[textKey]} (${item[valueKey]})`
+        };
     });
 }
